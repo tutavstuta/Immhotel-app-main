@@ -32,11 +32,12 @@ class MaterialColors {
   static const Color socialDribbble = Color.fromRGBO(234, 76, 137, 1.0);
 
   //surface
-  static const Color surface = Color.fromRGBO(22, 22, 22, 1);
+  static const Color surface = Color.fromRGBO(149, 97, 81, 1.0);
    static const Color onSurface = Color.fromRGBO(255, 255, 255, 1);
 
   //primaray
   static const Color primaryBackgroundColor = Color.fromRGBO(149, 97, 81, 1.0);
+  static const Color secondaryBackgroundColor = Color.fromRGBO(255, 255, 255, 1);
   static const Color primaryTextColor = Color.fromRGBO(149, 97, 81, 1.0);
   static const Color secondaryTextColor = Color.fromRGBO(255, 255, 255, 1);
 

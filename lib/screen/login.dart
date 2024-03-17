@@ -1,17 +1,90 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import "package:flutter/widgets.dart";
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
+import "package:imm_hotel_app/constants/server.dart";
+import "package:imm_hotel_app/screen/home.dart";
 
-class Login extends StatelessWidget {
+Future<LoginResponse> login(String email, String password) async {
+  const storage = FlutterSecureStorage();
+  final response = await http.post(
+    Uri.parse('${ServerConstant.server}/customer/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'email': email,
+      'password': password,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final body = jsonDecode(response.body);
+    if (kDebugMode) {
+      print(response.body);
+    }
+    final token = body['token'];
+    storage.write(key: "token", value: token);
+
+    return LoginResponse.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    throw Exception('Failed to login');
+  }
+}
+
+class LoginResponse {
+  final String token;
+  final String message;
+  final String tokenType;
+
+  const LoginResponse({
+    required this.token,
+    required this.message,
+    required this.tokenType,
+  });
+
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'token': String token,
+        'message': String message,
+        'tokenType': String tokenType,
+      } =>
+        LoginResponse(
+          token: token,
+          message: message,
+          tokenType: tokenType,
+        ),
+      _ => throw const FormatException('Failed to login'),
+    };
+  }
+}
+
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<LoginResponse>? _futureLoginResponse;
+  bool _isObscure = true;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          fontFamily: 'NotoSansThai',
-          colorScheme: AppTheme.lightColorScheme),
+          fontFamily: 'NotoSansThai', colorScheme: AppTheme.lightColorScheme),
       home: Scaffold(
         body: Center(
           child: Column(
@@ -20,41 +93,50 @@ class Login extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.only(right: 20, left: 20),
                   child: Image.asset("assets/images/logo1.png")),
-              const Padding(
-                padding: EdgeInsets.only(right: 20, left: 20,bottom: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                         borderSide: BorderSide(
                             color: MaterialColors.inpBorderColor,
                             width: 1.0,
                             style: BorderStyle.solid),
-                            
                         gapPadding: 10),
-                        prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(Icons.email),
                     labelText: 'อีเมลล์',
-                    
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(right: 20, left: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, left: 20),
                 child: TextField(
-                  // obscureText: true,
-                  style: TextStyle(color: MaterialColors.secondaryTextColor),
+                  obscureText: _isObscure,
+                  controller: _passwordController,
+                  style:
+                      const TextStyle(color: MaterialColors.secondaryTextColor),
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          borderSide: BorderSide(
-                              color: MaterialColors.inpBorderColor,
-                              width: 1.0,
-                              style: BorderStyle.solid),
-                          gapPadding: 10),
-                          prefixIcon: Icon(Icons.lock),
-                      labelText: 'พาสเวิร์ด',
-                      
-                      ),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        borderSide: BorderSide(
+                            color: MaterialColors.inpBorderColor,
+                            width: 1.0,
+                            style: BorderStyle.solid),
+                        gapPadding: 10),
+                    prefixIcon: const Icon(Icons.lock),
+                    labelText: 'พาสเวิร์ด',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _isObscure ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               ),
               SizedBox(
@@ -65,23 +147,36 @@ class Login extends StatelessWidget {
                   child: ElevatedButton(
                       onPressed: () {
                         // Handle button press
+                        setState(() {
+                          _futureLoginResponse = login(_emailController.text,
+                                  _passwordController.text)
+                              as Future<LoginResponse>?;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Home()),
+                          );
+                        });
                       },
-                      style:  ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(MaterialColors.primary),
-                        foregroundColor: MaterialStateProperty.all(MaterialColors.onPrimary)
-                      ),
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(MaterialColors.primary),
+                          foregroundColor: MaterialStateProperty.all(
+                              MaterialColors.onPrimary)),
                       child: const Text('เข้าสู่ระบบ')),
                 ),
               ),
-               const SizedBox(
+              const SizedBox(
                 width: double.infinity,
                 child: Padding(
                   padding: EdgeInsets.only(right: 20, left: 20, top: 20),
-                  child: Center(child: Row(
-                    mainAxisAlignment :MainAxisAlignment.center,
+                  child: Center(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("สมัครสมาชิก?"),
-                      Text(" Sign Up",style:TextStyle(color: MaterialColors.success)),
+                      Text(" Sign Up",
+                          style: TextStyle(color: MaterialColors.success)),
                     ],
                   )),
                 ),
