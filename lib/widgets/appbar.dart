@@ -1,51 +1,30 @@
 import 'package:flutter/material.dart';
+import "package:imm_hotel_app/constants/theme.dart";
 
-class AppBarMain extends StatelessWidget {
-  const AppBarMain({super.key});
+class AppBarHome extends StatelessWidget {
+  const AppBarHome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('AppBar'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add_alert),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.navigate_next),
-            tooltip: 'Go to the next page',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: const Text('Next page'),
-                    ),
-                    body: const Center(
-                      child: Text(
-                        'This is the next page',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  );
-                },
-              ));
-            },
-          ),
-        ],
+    return AppBar(
+      title: const Text(''),
+      leadingWidth: 150,
+      leading: Image.asset(
+        'assets/images/logo.jpg',
       ),
-      body: const Center(
-        child: Text(
-          'This is the home page',
-          style: TextStyle(fontSize: 24),
+      backgroundColor: MaterialColors.primaryBackgroundColor,
+      foregroundColor: Colors.white,
+      toolbarHeight: 80,
+      actions: <Widget>[
+        IconButton(
+          icon:
+              const Icon(Icons.account_circle, color: Colors.white, size: 40),
+          onPressed: () {
+            // Handle the icon button press
+          },
         ),
-      ),
+        // Add more icons as needed
+      ],
     );
   }
 }
