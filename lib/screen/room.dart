@@ -6,10 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
-import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/screen/components/home/destination.dart";
-import 'package:flutter/foundation.dart';
+import "package:imm_hotel_app/screen/roomdetail.dart";
 
 Future<List<dynamic>> getRoom() async {
   const storage = FlutterSecureStorage();
@@ -217,7 +216,12 @@ class RoomItem extends StatelessWidget {
             ),
             subtitle: Text('Max Persons: ${room['max_person']}'),
             onTap: () {
-              // Handle tap event
+               Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RoomDetail(roomId: room['_id']),
+          ),
+        );
             },
           ),
         ),

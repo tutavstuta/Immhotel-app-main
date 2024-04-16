@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/screen/components/home/destination.dart";
-import "package:imm_hotel_app/screen/list.dart";
 import "package:imm_hotel_app/screen/landing.dart";
-import "package:imm_hotel_app/screen/text.dart";
 import "package:imm_hotel_app/screen/room.dart";
-import 'package:flutter/foundation.dart';
+import "package:imm_hotel_app/screen/booking.dart";
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -85,9 +83,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
   Widget build(BuildContext context) {
     return NavigatorPopHandler(
       onPop: () {
-        final NavigatorState navigator =
-            navigatorKeys[selectedIndex].currentState!;
-        navigator.pop();
+        // final NavigatorState navigator =
+        //     navigatorKeys[selectedIndex].currentState!;
+        // navigator.pop();
       },
       child: Scaffold(
         body: SafeArea(
@@ -120,6 +118,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
               print(selectedIndex);
               
             });
+
           },
           destinations: allDestinations.map<NavigationDestination>(
             (Destination destination) {
@@ -158,17 +157,13 @@ class _DestinationViewState extends State<DestinationView> {
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (BuildContext context) {
-            print(settings.name);
-            print(widget.destination.title);
             switch (settings.name) {
               case '/':
                 return RoomPage(destination: widget.destination);
               case '/room':
                 return Landing(destination: widget.destination);
-              case '/text':
-                return TextPage(destination: widget.destination);
               case '/booking':
-                return TextPage(destination: widget.destination);
+                return BookingPage();
             }
             assert(false);
             return const SizedBox();
@@ -178,3 +173,4 @@ class _DestinationViewState extends State<DestinationView> {
     );
   }
 }
+

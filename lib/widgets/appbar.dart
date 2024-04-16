@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 
-class AppBarHome extends StatelessWidget {
+class AppBarHome extends StatelessWidget implements PreferredSizeWidget {
   const AppBarHome({super.key});
 
   @override
@@ -17,8 +17,7 @@ class AppBarHome extends StatelessWidget {
       toolbarHeight: 80,
       actions: <Widget>[
         IconButton(
-          icon:
-              const Icon(Icons.account_circle, color: Colors.white, size: 40),
+          icon: const Icon(Icons.account_circle, color: Colors.white, size: 40),
           onPressed: () {
             // Handle the icon button press
           },
@@ -27,4 +26,7 @@ class AppBarHome extends StatelessWidget {
       ],
     );
   }
+  
+   @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
