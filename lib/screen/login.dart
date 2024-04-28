@@ -9,6 +9,7 @@ import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/screen/home.dart";
+import 'package:imm_hotel_app/screen/register.dart';
 
 Future<LoginResponse> login(String email, String password) async {
   const storage = FlutterSecureStorage();
@@ -80,106 +81,117 @@ class _LoginState extends State<Login> {
   Future<LoginResponse>? _futureLoginResponse;
   bool _isObscure = true;
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
           fontFamily: 'NotoSansThai', colorScheme: AppTheme.lightColorScheme),
       home: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20),
-                  child: Image.asset("assets/images/logo1.png")),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                child: TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        borderSide: BorderSide(
-                            color: MaterialColors.inpBorderColor,
-                            width: 1.0,
-                            style: BorderStyle.solid),
-                        gapPadding: 10),
-                    prefixIcon: Icon(Icons.email),
-                    labelText: 'อีเมลล์',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, left: 20),
-                child: TextField(
-                  obscureText: _isObscure,
-                  controller: _passwordController,
-                  style:
-                      const TextStyle(color: MaterialColors.secondaryTextColor),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        borderSide: BorderSide(
-                            color: MaterialColors.inpBorderColor,
-                            width: 1.0,
-                            style: BorderStyle.solid),
-                        gapPadding: 10),
-                    prefixIcon: const Icon(Icons.lock),
-                    labelText: 'พาสเวิร์ด',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                    padding: const EdgeInsets.only(right: 20, left: 20),
+                    child: Image.asset("assets/images/logo1.png")),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(
+                              color: MaterialColors.inpBorderColor,
+                              width: 1.0,
+                              style: BorderStyle.solid),
+                          gapPadding: 10),
+                      prefixIcon: Icon(Icons.email),
+                      labelText: 'อีเมลล์',
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 80,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        // Handle button press
-                        setState(() {
-                        _futureLoginResponse =   login(
-                              _emailController.text, _passwordController.text);
-                        });
-                        if(_futureLoginResponse != null){
-                          Navigator.pushReplacementNamed(context,'/home');
-                        }
-                      },
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(MaterialColors.primary),
-                          foregroundColor: MaterialStateProperty.all(
-                              MaterialColors.onPrimary)),
-                      child: const Text('เข้าสู่ระบบ')),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 20),
+                  child: TextField(
+                    obscureText: _isObscure,
+                    controller: _passwordController,
+                    style:
+                        const TextStyle(color: MaterialColors.secondaryTextColor),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(
+                              color: MaterialColors.inpBorderColor,
+                              width: 1.0,
+                              style: BorderStyle.solid),
+                          gapPadding: 10),
+                      prefixIcon: const Icon(Icons.lock),
+                      labelText: 'พาสเวิร์ด',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            _isObscure ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _isObscure = !_isObscure;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 20, left: 20, top: 20),
-                  child: Center(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("สมัครสมาชิก?"),
-                      Text(" Sign Up",
-                          style: TextStyle(color: MaterialColors.success)),
-                    ],
-                  )),
+                SizedBox(
+                  width: double.infinity,
+                  height: 80,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          // Handle button press
+                          setState(() {
+                            _futureLoginResponse = login(
+                                _emailController.text, _passwordController.text);
+                          });
+                          if (_futureLoginResponse != null) {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        },
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(MaterialColors.primary),
+                            foregroundColor: MaterialStateProperty.all(
+                                MaterialColors.onPrimary)),
+                        child: const Text('เข้าสู่ระบบ')),
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
+                    child: Center(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("สมัครสมาชิก?"),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Register(),
+                              ),
+                            );
+                          },
+                          child: const Text(" Sign Up",
+                              style: TextStyle(color: MaterialColors.success)),
+                        ),
+                      ],
+                    )),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

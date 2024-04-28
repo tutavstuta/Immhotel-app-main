@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/screen/roomdetail.dart";
+import 'package:imm_hotel_app/widgets/appbar.dart';
 
 Future<List<dynamic>> getRoom() async {
   const storage = FlutterSecureStorage();
@@ -88,26 +89,7 @@ class _RoomPageState extends State<RoomPage> {
         } else {
           List<dynamic> roomData = snapshot.data!;
           return Scaffold(
-            appBar: AppBar(
-              title: const Text(''),
-              leadingWidth: 150,
-              leading: Image.asset(
-                'assets/images/logo.jpg',
-              ),
-              backgroundColor: MaterialColors.primaryBackgroundColor,
-              foregroundColor: Colors.white,
-              toolbarHeight: 80,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.account_circle,
-                      color: Colors.white, size: 40),
-                  onPressed: () {
-                    // Handle the icon button press
-                  },
-                ),
-                // Add more icons as needed
-              ],
-            ),
+            appBar:const AppBarHome(),
             backgroundColor: MaterialColors.secondaryBackgroundColor,
             body: SingleChildScrollView(
               child: Center(

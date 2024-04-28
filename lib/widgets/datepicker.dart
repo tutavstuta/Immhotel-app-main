@@ -21,6 +21,7 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
   @override
   String? get restorationId => widget.restorationId;
 
+
   final RestorableDateTime _selectedDate =
       RestorableDateTime(DateTime(2021, 7, 25));
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
@@ -53,6 +54,8 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
     );
   }
 
+
+
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_selectedDate, 'selected_date');
@@ -72,16 +75,18 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: () {
         _restorableDatePickerRouteFuture.present();
       },
-      child: const Row(
+      child:  Row(
         children: [
-          Text(' วันที่',
-              style: TextStyle(color: MaterialColors.secondary)),
+          Text('${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
+              style: const TextStyle(color: MaterialColors.secondary)),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/constants/server.dart";
+import "package:imm_hotel_app/screen/login.dart";
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -13,7 +14,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController = TextEditingController();
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
@@ -69,11 +71,12 @@ class _RegisterState extends State<Register> {
                                       padding: EdgeInsets.only(left: 50),
                                       child: Text("สมัครสมาชิก",
                                           style: TextStyle(
-                                            fontSize:24,
+                                              fontSize: 24,
                                               color: MaterialColors.secondary)),
                                     )))))),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(
@@ -90,12 +93,13 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20,bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     obscureText: _isObscure,
                     controller: _passwordController,
-                    style:
-                        const TextStyle(color: MaterialColors.secondaryTextColor),
+                    style: const TextStyle(
+                        color: MaterialColors.secondaryTextColor),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -107,8 +111,9 @@ class _RegisterState extends State<Register> {
                       prefixIcon: const Icon(Icons.lock),
                       labelText: 'พาสเวิร์ด',
                       suffixIcon: IconButton(
-                        icon: Icon(
-                            _isObscure ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_isObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
                           setState(() {
                             _isObscure = !_isObscure;
@@ -119,12 +124,13 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20,bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     obscureText: _isObscure,
                     controller: _passwordConfirmController,
-                    style:
-                        const TextStyle(color: MaterialColors.secondaryTextColor),
+                    style: const TextStyle(
+                        color: MaterialColors.secondaryTextColor),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -136,8 +142,9 @@ class _RegisterState extends State<Register> {
                       prefixIcon: const Icon(Icons.lock),
                       labelText: 'ยืนยันพาสเวิร์ด',
                       suffixIcon: IconButton(
-                        icon: Icon(
-                            _isObscure ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_isObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
                           setState(() {
                             _isObscure = !_isObscure;
@@ -148,7 +155,8 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -165,7 +173,8 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     controller: _phoneController,
                     decoration: const InputDecoration(
@@ -185,7 +194,8 @@ class _RegisterState extends State<Register> {
                   width: double.infinity,
                   height: 80,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: ElevatedButton(
                         onPressed: () {
                           // Handle button press
@@ -201,24 +211,37 @@ class _RegisterState extends State<Register> {
                           });
                         },
                         style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(MaterialColors.primaryBackgroundColor),
+                            backgroundColor: MaterialStateProperty.all(
+                                MaterialColors.primaryBackgroundColor),
                             foregroundColor: MaterialStateProperty.all(
                                 MaterialColors.primary)),
                         child: const Text('สมัครสมาชิก')),
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 20, left: 20, top: 20),
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: Center(
                         child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("มีบัญชีอยู่แล้ว?",style: TextStyle(color: Color.fromARGB(255, 108, 108, 108))),
-                        Text(" Sign In",
-                            style: TextStyle(color: MaterialColors.success)),
+                        const Text("มีบัญชีอยู่แล้ว?",
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 108, 108, 108))),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Login(),
+                              ),
+                            );
+                          },
+                          child: const Text(" Sign In",
+                              style: TextStyle(color: MaterialColors.success)),
+                        ),
                       ],
                     )),
                   ),

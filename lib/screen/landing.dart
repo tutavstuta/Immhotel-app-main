@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import 'package:carousel_slider/carousel_slider.dart';
 import "package:imm_hotel_app/constants/server.dart";
-import "package:imm_hotel_app/screen/components/home/destination.dart";
+import "package:imm_hotel_app/widgets/appbar.dart";
 
 class Landing extends StatelessWidget {
   Landing({super.key});
@@ -26,26 +26,7 @@ class Landing extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-        leadingWidth: 150,
-        leading: Image.asset(
-          'assets/images/logo.jpg',
-        ),
-        backgroundColor: MaterialColors.primaryBackgroundColor,
-        foregroundColor: Colors.white,
-        toolbarHeight: 80,
-        actions: <Widget>[
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.white, size: 40),
-            onPressed: () {
-              // Handle the icon button press
-            },
-          ),
-          // Add more icons as needed
-        ],
-      ),
+      appBar: const AppBarHome(),
       backgroundColor: MaterialColors.primaryBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
