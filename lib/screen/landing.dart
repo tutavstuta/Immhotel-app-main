@@ -3,37 +3,22 @@ import "package:imm_hotel_app/constants/theme.dart";
 import 'package:carousel_slider/carousel_slider.dart';
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/screen/components/home/destination.dart";
-import 'package:flutter/foundation.dart';
 
 class Landing extends StatelessWidget {
-  Landing({super.key, required this.destination});
+  Landing({super.key});
 
-  final Destination destination;
+
   final List<String> images = [
     '${ServerConstant.imagehost}/images/slider1.jpg',
 
     // Add more image URLs here
   ];
 
-  Widget _buildDialog(BuildContext context) {
-    return AlertDialog(
-      title: Text('${destination.title} AlertDialog'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final TextStyle headlineSmall = Theme.of(context).textTheme.headlineSmall!;
-    final ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: destination.color,
+    ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
       visualDensity: VisualDensity.comfortable,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

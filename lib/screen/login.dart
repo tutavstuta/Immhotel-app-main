@@ -80,6 +80,7 @@ class _LoginState extends State<Login> {
   Future<LoginResponse>? _futureLoginResponse;
   bool _isObscure = true;
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -148,15 +149,12 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         // Handle button press
                         setState(() {
-                          _futureLoginResponse = login(_emailController.text,
-                                  _passwordController.text)
-                              as Future<LoginResponse>?;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Home()),
-                          );
+                        _futureLoginResponse =   login(
+                              _emailController.text, _passwordController.text);
                         });
+                        if(_futureLoginResponse != null){
+                          Navigator.pushReplacementNamed(context,'/home');
+                        }
                       },
                       style: ButtonStyle(
                           backgroundColor:

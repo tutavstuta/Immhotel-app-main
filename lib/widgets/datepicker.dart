@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 
 class DatePicker extends StatefulWidget {
@@ -11,8 +15,7 @@ class DatePicker extends StatefulWidget {
 }
 
 /// RestorationProperty objects can be used because of RestorationMixin.
-class _DatePickerExampleState extends State<DatePicker>
-    with RestorationMixin {
+class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
   // In this example, the restoration ID for the mixin is passed in through
   // the [StatefulWidget]'s constructor.
   @override
@@ -71,14 +74,15 @@ class _DatePickerExampleState extends State<DatePicker>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: OutlinedButton(
-          onPressed: () {
-            _restorableDatePickerRouteFuture.present();
-          },
-          child: const Text('Open Date Picker',style: TextStyle(color: MaterialColors.secondary)),
-        ),
+    return OutlinedButton(
+      onPressed: () {
+        _restorableDatePickerRouteFuture.present();
+      },
+      child: const Row(
+        children: [
+          Text(' วันที่',
+              style: TextStyle(color: MaterialColors.secondary)),
+        ],
       ),
     );
   }

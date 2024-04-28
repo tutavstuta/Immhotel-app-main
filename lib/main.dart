@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'NotoSansThai', colorScheme: AppTheme.lightColorScheme),
-        initialRoute: '/home',
+        initialRoute: '/login',
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const Home(),
           '/login': (BuildContext context) => const Login(),

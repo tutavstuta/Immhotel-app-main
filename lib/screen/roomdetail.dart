@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -140,35 +139,37 @@ class _RoomDetailState extends State<RoomDetail> {
           } else {
             RoomDetailResponse roomData = snapshot.data!;
             return Scaffold(
-              appBar: const AppBarHome(),
-              backgroundColor: MaterialColors.secondaryBackgroundColor,
-              body: SingleChildScrollView(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Container(
-                        color: MaterialColors.primaryBackgroundColor,
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        height: 73,
-                        child: Center(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(300),
-                              topRight: Radius.circular(300),
-                            ),
-                            child: SizedBox(
-                              child: Container(
-                                alignment: Alignment.center,
-                                color: MaterialColors.secondaryBackgroundColor,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
-                                    roomData.type,
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      color: MaterialColors.secondary,
+                appBar: const AppBarHome(),
+                backgroundColor: MaterialColors.secondaryBackgroundColor,
+                body: SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          color: MaterialColors.primaryBackgroundColor,
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: 73,
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(300),
+                                topRight: Radius.circular(300),
+                              ),
+                              child: SizedBox(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  color:
+                                      MaterialColors.secondaryBackgroundColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Text(
+                                      roomData.type,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        color: MaterialColors.secondary,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -176,17 +177,29 @@ class _RoomDetailState extends State<RoomDetail> {
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        child: DetailView(
-                          detail: roomData,
-                        ),
-                      )
-                    ],
+                        SizedBox(
+                          child: DetailView(
+                            detail: roomData,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
+                bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                     
+                    ],
+                  ),
+                ));
           }
         });
   }

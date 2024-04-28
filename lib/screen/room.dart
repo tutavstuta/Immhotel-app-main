@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/server.dart";
-import "package:imm_hotel_app/screen/components/home/destination.dart";
 import "package:imm_hotel_app/screen/roomdetail.dart";
 
 Future<List<dynamic>> getRoom() async {
@@ -56,9 +55,9 @@ class RoomListResponse {
 }
 
 class RoomPage extends StatefulWidget {
-  const RoomPage({super.key, required this.destination});
+  const RoomPage({super.key});
 
-  final Destination destination;
+
 
   @override
   State<RoomPage> createState() => _RoomPageState();

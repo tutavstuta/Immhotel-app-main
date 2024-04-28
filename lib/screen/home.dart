@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import "package:imm_hotel_app/constants/theme.dart";
-import "package:imm_hotel_app/screen/components/home/destination.dart";
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:imm_hotel_app/screen/landing.dart";
 import "package:imm_hotel_app/screen/room.dart";
-import "package:imm_hotel_app/screen/booking.dart";
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,165 +10,117 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
-  static const List<Destination> allDestinations = <Destination>[
-    Destination(0, 'หน้าแรก', Icons.home, Colors.grey),
-    Destination(1, 'ห้องพัก', Icons.bed, Colors.grey),
-    Destination(2, 'ประวัติโรงแรม', Icons.menu_book, Colors.grey),
-    Destination(3, 'จอง', Icons.history, Colors.grey),
-  ];
-
-  late final List<GlobalKey<NavigatorState>> navigatorKeys;
-  late final List<GlobalKey> destinationKeys;
-  late final List<AnimationController> destinationFaders;
-  late final List<Widget> destinationViews;
-
-  int selectedIndex = 0;
-
-  AnimationController buildFaderController() {
-    final AnimationController controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    controller.addStatusListener(
-      (AnimationStatus status) {
-        if (status == AnimationStatus.dismissed) {
-          setState(() {}); // Rebuild unselected destinations offstage.
-        }
-      },
-    );
-    return controller;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
-      allDestinations.length,
-      (int index) => GlobalKey(),
-    ).toList();
-
-    destinationFaders = List<AnimationController>.generate(
-      allDestinations.length,
-      (int index) => buildFaderController(),
-    ).toList();
-    destinationFaders[selectedIndex].value = 1.0;
-
-    final CurveTween tween = CurveTween(curve: Curves.fastOutSlowIn);
-    destinationViews = allDestinations.map<Widget>(
-      (Destination destination) {
-        return FadeTransition(
-          opacity: destinationFaders[destination.index].drive(tween),
-          child: DestinationView(
-            destination: destination,
-            navigatorKey: navigatorKeys[destination.index],
-          ),
-        );
-      },
-    ).toList();
-  }
-
-  @override
-  void dispose() {
-    for (final AnimationController controller in destinationFaders) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
+class _HomeState extends State<Home> {
+  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return NavigatorPopHandler(
-      onPop: () {
-        // final NavigatorState navigator =
-        //     navigatorKeys[selectedIndex].currentState!;
-        // navigator.pop();
-      },
-      child: Scaffold(
-        body: SafeArea(
-          top: false,
-          child: Stack(
-            fit: StackFit.expand,
-            children: allDestinations.map(
-              (Destination destination) {
-                final int index = destination.index;
-                final Widget view = destinationViews[index];
-                if (index == selectedIndex) {
-                  destinationFaders[index].forward();
-                  return Offstage(offstage: false, child: view);
-                } else {
-                  destinationFaders[index].reverse();
-                  if (destinationFaders[index].isAnimating) {
-                    return IgnorePointer(child: view);
-                  }
-                  return Offstage(child: view);
-                }
-              },
-            ).toList(),
+    final ThemeData theme = Theme.of(context);
+    return Scaffold(
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        indicatorColor: Colors.brown,
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            label: 'หน้าแรก',
           ),
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (int index) {
-            setState(() {
-              selectedIndex = index;
-              print(selectedIndex);
-              
-            });
-
-          },
-          destinations: allDestinations.map<NavigationDestination>(
-            (Destination destination) {
-              return NavigationDestination(
-                icon: Icon(destination.icon, color: MaterialColors.onSurface),
-                label: destination.title,
-              );
-            },
-          ).toList(),
-        ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.bed),
+            icon: Icon(Icons.bed_outlined),
+            label: 'ห้องพัก',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.hotel),
+            icon: Badge(child: Icon(Icons.hotel_outlined)),
+            label: 'ประวัติโรงแรม',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.history),
+            icon: Badge(
+              label: Text('2'),
+              child: Icon(Icons.history_outlined),
+            ),
+            label: 'การจอง',
+          ),
+        ],
       ),
-    );
-  }
-}
+      body: <Widget>[
+        /// Home page
+        Landing(),
+        const RoomPage(),
 
-class DestinationView extends StatefulWidget {
-  const DestinationView({
-    super.key,
-    required this.destination,
-    required this.navigatorKey,
-  });
+        /// Notifications page
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Card(
+                child: ListTile(
+                  leading: Icon(Icons.notifications_sharp),
+                  title: Text('Notification 1'),
+                  subtitle: Text('This is a notification'),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: Icon(Icons.notifications_sharp),
+                  title: Text('Notification 2'),
+                  subtitle: Text('This is a notification'),
+                ),
+              ),
+            ],
+          ),
+        ),
 
-  final Destination destination;
-  final Key navigatorKey;
-
-  @override
-  State<DestinationView> createState() => _DestinationViewState();
-}
-
-class _DestinationViewState extends State<DestinationView> {
-  @override
-  Widget build(BuildContext context) {
-    return Navigator(
-      key: widget.navigatorKey,
-      onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) {
-            switch (settings.name) {
-              case '/':
-                return RoomPage(destination: widget.destination);
-              case '/room':
-                return Landing(destination: widget.destination);
-              case '/booking':
-                return BookingPage();
+        /// Messages page
+        ListView.builder(
+          reverse: true,
+          itemCount: 2,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == 0) {
+              return Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  margin: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text(
+                    'Hello',
+                    style: theme.textTheme.bodyLarge!
+                        .copyWith(color: theme.colorScheme.onPrimary),
+                  ),
+                ),
+              );
             }
-            assert(false);
-            return const SizedBox();
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  'Hi!',
+                  style: theme.textTheme.bodyLarge!
+                      .copyWith(color: theme.colorScheme.onPrimary),
+                ),
+              ),
+            );
           },
-        );
-      },
+        ),
+      ][currentPageIndex],
     );
   }
 }
-

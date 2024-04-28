@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -66,8 +68,11 @@ class _BookingPageState extends State<BookingPage> {
                               .primaryBackgroundColor, // Set the color
                           size: 24.0, // Set the size
                         ),
+                        const SizedBox(width: 10,),
                         DropdownButton<String>(
                           value: selectedValue1,
+                          style: const TextStyle(color: MaterialColors.secondary),
+                          dropdownColor:MaterialColors.onSurface,
                           onChanged: (newValue) {
                             setState(() {
                               selectedValue1 = newValue!;
@@ -85,6 +90,8 @@ class _BookingPageState extends State<BookingPage> {
                         ),
                         DropdownButton<String>(
                           value: selectedValue2,
+                          style: const TextStyle(color: MaterialColors.secondary),
+                          dropdownColor:MaterialColors.onSurface,
                           onChanged: (newValue) {
                             setState(() {
                               selectedValue2 = newValue!;
@@ -94,6 +101,7 @@ class _BookingPageState extends State<BookingPage> {
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
+                              
                               child: Text(value,
                                   style: const TextStyle(
                                       color: MaterialColors.secondary)),
@@ -101,7 +109,11 @@ class _BookingPageState extends State<BookingPage> {
                           }).toList(),
                         ),
                         DropdownButton<String>(
+                          hint:const Text("ห้อง",style:
+                                TextStyle(color: MaterialColors.secondary)),
                           value: selectedValue3,
+                          style: const TextStyle(color: MaterialColors.secondary),
+                          dropdownColor:MaterialColors.onSurface,
                           onChanged: (newValue) {
                             setState(() {
                               selectedValue3 = newValue!;
@@ -111,16 +123,37 @@ class _BookingPageState extends State<BookingPage> {
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value,
-                                  style: const TextStyle(
-                                      color: MaterialColors.secondary)),
+                              child: Text(value),
+                                 
                             );
                           }).toList(),
                         ),
                       ],
                     ),
-                    const Text("เช็คอิน",
-                        style: TextStyle(color: MaterialColors.secondary)),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment : CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.calendar_today,color:MaterialColors
+                              .primaryBackgroundColor ,
+                              size: 24.0
+                              ),
+                        SizedBox(width: 10,),
+                        Text("เช็คอิน",
+                        textAlign:TextAlign.end,
+                            style:
+                                TextStyle(color: MaterialColors.secondary)),
+                        DatePicker(
+                          restorationId: 'main',
+                        ),
+                         Text("เช็คเอาท์",textAlign:TextAlign.end,
+                            style:
+                                TextStyle(color: MaterialColors.secondary)),
+                        DatePicker(
+                          restorationId: 'main',
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 15,
                     ),
@@ -139,14 +172,6 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ],
                 )),
-            Expanded(
-              child: Container(
-                color: Colors.blue,
-                child: const DatePicker(
-                  restorationId: 'main',
-                ),
-              ),
-            ),
           ],
         ));
   }
