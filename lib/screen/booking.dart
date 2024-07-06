@@ -1,8 +1,5 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/widgets/datepicker.dart";
 
@@ -18,190 +15,175 @@ class BookingPage extends StatefulWidget {
 class _BookingPageState extends State<BookingPage> {
   late String selectedValue1;
   late String selectedValue2;
-  late String selectedValue3;
-  late String selectedValue4;
+  late DateTime dateCheckin;
+  late DateTime dateCheckout;
 
   @override
   void initState() {
     super.initState();
-    // Initialize selectedValue here (e.g., fetch from an API or set a default)
     selectedValue1 = 'ผู้ใหญ่ 1'; // initialization
     selectedValue2 = 'เด็ก 1'; // initialization
-    selectedValue3 = 'Superior'; // initialization
-    selectedValue4 = 'ผู้ใหญ่ 1'; // initialization
+    dateCheckin = DateTime.now(); // initialization
+    dateCheckout = DateTime.now().add(const Duration(days: 1)); // initialization
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: MaterialColors.primaryBackgroundColor,
-          foregroundColor: Colors.white,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.account_circle,
-                  color: Colors.white, size: 40),
-              onPressed: () {
-                // Handle the icon button press
-              },
+      appBar: AppBar(
+        backgroundColor: MaterialColors.primaryBackgroundColor,
+        foregroundColor: Colors.white,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.account_circle,
+                color: Colors.white, size: 40),
+            onPressed: () {
+              // Handle the icon button press
+            },
+          ),
+          // Add more icons as needed
+        ],
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Center(child: Image.asset("assets/images/logo1.png")),
+          Container(
+            padding: const EdgeInsets.fromLTRB(0, 50, 10, 20),
+            decoration: const BoxDecoration(
+              color: MaterialColors.primary,
+              borderRadius: BorderRadius.all(Radius.circular(50)),
             ),
-            // Add more icons as needed
-          ],
-        ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Center(child: Image.asset("assets/images/logo1.png")),
-            Container(
-                padding: const EdgeInsets.fromLTRB(0, 50, 10, 20),
-                decoration: const BoxDecoration(
-                    color: MaterialColors.primary,
-                    borderRadius: BorderRadius.all(Radius.circular(50))),
-                child: Column(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.person, // Use the heart icon
-                          color: MaterialColors
-                              .primaryBackgroundColor, // Set the color
-                          size: 24.0, // Set the size
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        DropdownButton<String>(
-                          value: selectedValue1,
-                          style:
-                              const TextStyle(color: MaterialColors.secondary),
-                          dropdownColor: MaterialColors.onSurface,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedValue1 = newValue!;
-                            });
-                          },
-                          items: <String>['ผู้ใหญ่ 1', 'ผู้ใหญ่ 2', 'ผู้ใหญ่ 3']
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value,
-                                  style: const TextStyle(
-                                      color: MaterialColors.secondary)),
-                            );
-                          }).toList(),
-                        ),
-                        DropdownButton<String>(
-                          value: selectedValue2,
-                          style:
-                              const TextStyle(color: MaterialColors.secondary),
-                          dropdownColor: MaterialColors.onSurface,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedValue2 = newValue!;
-                            });
-                          },
-                          items: <String>['เด็ก 1', 'เด็ก 2', 'เด็ก 3']
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value,
-                                  style: const TextStyle(
-                                      color: MaterialColors.secondary)),
-                            );
-                          }).toList(),
-                        ),
-                        DropdownButton<String>(
-                          hint: const Text("ห้อง",
-                              style:
-                                  TextStyle(color: MaterialColors.secondary)),
-                          value: selectedValue3,
-                          style:
-                              const TextStyle(color: MaterialColors.secondary),
-                          dropdownColor: MaterialColors.onSurface,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedValue3 = newValue!;
-                            });
-                          },
-                          items: <String>['Superior', 'Delux', 'Twin']
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                    const Icon(
+                      Icons.person, // Use the heart icon
+                      color: MaterialColors.primaryBackgroundColor, // Set the color
+                      size: 24.0, // Set the size
                     ),
-                    const Center(
-                      child: SizedBox(
-                        width: 240,
-                        child: Column(
+                    const SizedBox(width: 10),
+                    DropdownButton<String>(
+                      value: selectedValue1,
+                      style: const TextStyle(color: MaterialColors.secondary),
+                      dropdownColor: MaterialColors.onSurface,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedValue1 = newValue!;
+                        });
+                      },
+                      items: <String>['ผู้ใหญ่ 1', 'ผู้ใหญ่ 2', 'ผู้ใหญ่ 3']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value,
+                              style: const TextStyle(
+                                  color: MaterialColors.secondary)),
+                        );
+                      }).toList(),
+                    ),
+                    DropdownButton<String>(
+                      value: selectedValue2,
+                      style: const TextStyle(color: MaterialColors.secondary),
+                      dropdownColor: MaterialColors.onSurface,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedValue2 = newValue!;
+                        });
+                      },
+                      items: <String>['เด็ก 1', 'เด็ก 2', 'เด็ก 3']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value,
+                              style: const TextStyle(
+                                  color: MaterialColors.secondary)),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+                Center(
+                  child: SizedBox(
+                    width: 200,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.calendar_today,
-                                    color:
-                                        MaterialColors.primaryBackgroundColor,
-                                    size: 24.0),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text("เช็คอิน",
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(
-                                        color: MaterialColors.secondary)),
-                                DatePicker(
-                                  restorationId: 'main',
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.calendar_today,
-                                    color:
-                                        MaterialColors.primaryBackgroundColor,
-                                    size: 24.0),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text("เช็คเอาท์",
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(
-                                        color: MaterialColors.secondary)),
-                                DatePicker(
-                                  restorationId: 'main',
-                                ),
-                              ],
+                            const Icon(Icons.calendar_today,
+                                color: MaterialColors.primaryBackgroundColor,
+                                size: 24.0),
+                            const SizedBox(width: 10),
+                            const Text("เช็คอิน",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: MaterialColors.secondary)),
+                            DatePicker(
+                              restorationId: 'checkin',
+                              onSelected: (newDate) {
+                                setState(() {
+                                  dateCheckin = newDate;
+                                });
+                              },
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BookingPage(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: MaterialColors.primaryBackgroundColor,
+                                size: 24.0),
+                            const SizedBox(width: 10),
+                            const Text("เช็คเอาท์",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                    color: MaterialColors.secondary)),
+                            DatePicker(
+                              restorationId: 'checkout',
+                              onSelected: (newDate) {
+                                setState(() {
+                                  dateCheckout = newDate;
+                                });
+                              },
                             ),
-                          );
-                        },
-                        child: const Text('สำรองห้องพัก'),
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                )),
-          ],
-        ));
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (kDebugMode) {
+                        print(selectedValue1);
+                        print(selectedValue2);
+                        print(dateCheckin);
+                        print(dateCheckout);
+                      }
+                     
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookingPage(),
+                        ),
+                      );
+                    },
+                    child: const Text('สำรองห้องพัก'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

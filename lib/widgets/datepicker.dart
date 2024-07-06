@@ -1,15 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 
 class DatePicker extends StatefulWidget {
-  const DatePicker({super.key, this.restorationId});
+   const DatePicker({super.key, this.restorationId,required this.onSelected});
 
   final String? restorationId;
-
+  final ValueChanged onSelected;
+ 
   @override
   State<DatePicker> createState() => _DatePickerExampleState();
 }
@@ -23,7 +20,7 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
 
 
   final RestorableDateTime _selectedDate =
-      RestorableDateTime(DateTime(2021, 7, 25));
+      RestorableDateTime(DateTime.now());
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
       RestorableRouteFuture<DateTime?>(
     onComplete: _selectDate,
@@ -47,8 +44,8 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
           restorationId: 'date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
-          firstDate: DateTime(2021),
-          lastDate: DateTime(2022),
+          firstDate: DateTime.now(),
+          lastDate: DateTime(2026),
         );
       },
     );
@@ -67,6 +64,7 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
     if (newSelectedDate != null) {
       setState(() {
         _selectedDate.value = newSelectedDate;
+         widget.onSelected(newSelectedDate);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
@@ -79,16 +77,12 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
+    return TextButton(
       onPressed: () {
         _restorableDatePickerRouteFuture.present();
       },
-      child:  Row(
-        children: [
-          Text('${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
-              style: const TextStyle(color: MaterialColors.secondary)),
-        ],
-      ),
+      child:  Text('${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
+          style: const TextStyle(color: MaterialColors.secondary),textAlign:TextAlign.end),
     );
   }
 }

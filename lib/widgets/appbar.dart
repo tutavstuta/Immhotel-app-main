@@ -27,17 +27,23 @@ class _AppBarHomeState extends State<AppBarHome> {
       toolbarHeight: 80,
       actions: <Widget>[
         PopupMenuButton<String>(
-          icon: const Icon(Icons.account_circle,color: Colors.white,size:40,), // Set icon for PopupMenuButton
+          icon: const Icon(
+            Icons.account_circle,
+            color: Colors.white,
+            size: 40,
+          ), // Set icon for PopupMenuButton
           onSelected: (String result) {
             setState(() {
               _selectedOption = result; // Update selected option
             });
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          
-            const PopupMenuItem<String>(
+             PopupMenuItem<String>(
               value: 'signout',
-              child: Text('ออกจากระบบ'),
+              child: TextButton(
+                onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              }, child: const Text('ออกจากระบบ')),
             ),
           ],
         ),
@@ -45,5 +51,4 @@ class _AppBarHomeState extends State<AppBarHome> {
       ],
     );
   }
-
 }

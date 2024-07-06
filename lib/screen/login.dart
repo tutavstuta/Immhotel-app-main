@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/constants/server.dart";
-import "package:imm_hotel_app/screen/home.dart";
 import 'package:imm_hotel_app/screen/register.dart';
 
 Future<LoginResponse> login(String email, String password) async {
@@ -155,6 +154,8 @@ class _LoginState extends State<Login> {
                           });
                           if (_futureLoginResponse != null) {
                             Navigator.pushReplacementNamed(context, '/home');
+                          }else{
+                            Navigator.pushReplacementNamed(context, '/login');
                           }
                         },
                         style: ButtonStyle(
