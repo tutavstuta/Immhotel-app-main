@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:imm_hotel_app/services/searchroom.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/server.dart";
@@ -129,9 +127,17 @@ class RoomList extends StatelessWidget {
   }
 }
 
-class RoomItem extends StatelessWidget {
+class RoomItem extends StatefulWidget {
   final Map<String, dynamic> room;
   const RoomItem(this.room, {super.key});
+
+  @override
+  State<RoomItem> createState() => _RoomItemState();
+}
+
+class _RoomItemState extends State<RoomItem> {
+  late int _totalPrice;
+  late int _price;
 
   String trimParagraph(String text, int maxLength) {
     if (text.length <= maxLength) {
@@ -147,6 +153,13 @@ class RoomItem extends StatelessWidget {
     }
 
     return '${text.substring(0, lastSpaceIndex)}...';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _totalPrice = 0;
+    _price = 0;
   }
 
   @override
@@ -173,7 +186,7 @@ class RoomItem extends StatelessWidget {
                     width: 150,
                     height: 150,
                     child: Image.network(
-                      '${ServerConstant.server}/${room['image']}', // Replace with your image URL
+                      '${ServerConstant.server}/${widget.room['image']}',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -183,13 +196,13 @@ class RoomItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          room['type'],
+                          widget.room['type'],
                           style: const TextStyle(color: MaterialColors.surface),
                           textAlign: TextAlign.start,
                         ),
                         const SizedBox(height: 16.0),
                         Text(
-                          trimParagraph(room['description'], 150),
+                          trimParagraph(widget.room['description'], 150),
                           style:
                               const TextStyle(color: MaterialColors.secondary),
                           textAlign: TextAlign.start,
@@ -213,8 +226,37 @@ class RoomItem extends StatelessWidget {
                 textAlign: TextAlign.start,
               ),
               Promotions(
-                promotion: room['promotions'],
+                promotion: widget.room['promotions'],
+                onSelected: (value) {
+                  print(value);
+                  setState(() {
+                  _totalPrice = value['total_price'];
+                  _price = value['price'];
+                    
+                  });
+                },
               ),
+              ElevatedButton(
+                  onPressed: () {},
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text('$_price บาท',style: const TextStyle( decoration: TextDecoration.lineThrough,),),
+                            Text('$_totalPrice บาท'),
+                          ],
+                        ),
+                      ),
+                      const Expanded(
+                        child: Column(
+                          children: [
+                            Text('จอง'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ))
             ],
           ),
         ),
@@ -224,23 +266,24 @@ class RoomItem extends StatelessWidget {
 }
 
 class Promotions extends StatefulWidget {
-  const Promotions({super.key, required this.promotion});
+  const Promotions(
+      {super.key, required this.promotion, required this.onSelected});
 
   final List<dynamic> promotion;
+  final ValueChanged onSelected;
 
   @override
   State<Promotions> createState() => _PromotionsState();
 }
 
 class _PromotionsState extends State<Promotions> {
-  late String _selectedPromotion;
+  late String? _selectedPromotion;
   late List _promotion;
 
   @override
   void initState() {
     super.initState();
-    _selectedPromotion =
-        widget.promotion.isNotEmpty ? widget.promotion[0]['_id'] : null;
+    _selectedPromotion = null;
     _promotion = widget.promotion;
   }
 
@@ -248,24 +291,40 @@ class _PromotionsState extends State<Promotions> {
   Widget build(BuildContext context) {
     return Column(
       children: _promotion.map((e) {
-        return RadioListTile<dynamic>(
-          activeColor: Colors.blue,
-          tileColor: MaterialColors.primary,
-          title: Text(
-            e['title'],
-            style: const TextStyle(color: Color.fromARGB(255, 238, 11, 11)),
-            textAlign: TextAlign.start,
+        return Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: Colors.grey, // Set the color of the top border
+                width: 1.0, // Set the width of the top border
+              ),
+              bottom: BorderSide(
+                color: Colors.grey, // Set the color of the top border
+                width: 1.0, // Set the width of the top border
+              ),
+            ),
           ),
-          subtitle: Promotion(
-            detail: e,
+          child: RadioListTile<dynamic>(
+            activeColor: Colors.blue,
+            hoverColor: Colors.black,
+            tileColor: MaterialColors.primary,
+            title: Text(
+              e['title'],
+              style: const TextStyle(color: Color.fromARGB(255, 238, 11, 11)),
+              textAlign: TextAlign.start,
+            ),
+            subtitle: Promotion(
+              detail: e,
+            ),
+            value: e['_id'],
+            groupValue: _selectedPromotion,
+            onChanged: (value) {
+              setState(() {
+                _selectedPromotion = value;
+                widget.onSelected(e);
+              });
+            },
           ),
-          value: e['_id'],
-          groupValue: _selectedPromotion,
-          onChanged: (value) {
-            setState(() {
-              _selectedPromotion = value;
-            });
-          },
         );
       }).toList(),
     );

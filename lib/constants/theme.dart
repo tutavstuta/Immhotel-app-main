@@ -17,7 +17,7 @@ class MaterialColors {
   static const Color input = Color.fromRGBO(220, 220, 220, 1.0);
   static const Color active = Color.fromRGBO(156, 38, 176, 1.0);
   static const Color placeholder = Color.fromRGBO(159, 165, 170, 1.0);
-  static const Color switch_off = Color.fromRGBO(212, 217, 221, 1.0);
+  static const Color switchOff = Color.fromRGBO(212, 217, 221, 1.0);
   static const Color gradientStart = Color.fromRGBO(107, 36, 170, 1.0);
   static const Color gradientEnd = Color.fromRGBO(172, 38, 136, 1.0);
   static const Color priceColor = Color.fromRGBO(234, 213, 251, 1.0);
