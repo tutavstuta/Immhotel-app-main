@@ -2,29 +2,34 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/widgets/datepicker.dart";
+import 'package:imm_hotel_app/screen/searchroomlist.dart';
 
 class BookingPage extends StatefulWidget {
   const BookingPage({
-    super.key,
+    super.key, required this.roomId
   });
+
+  final String roomId;
 
   @override
   State<BookingPage> createState() => _BookingPageState();
 }
 
 class _BookingPageState extends State<BookingPage> {
-  late String selectedValue1;
-  late String selectedValue2;
+  late String selectedValue1 = '1';
+  late String selectedValue2 = '1';
   late DateTime dateCheckin;
   late DateTime dateCheckout;
+  late String _roomId;
 
   @override
   void initState() {
     super.initState();
-    selectedValue1 = 'ผู้ใหญ่ 1'; // initialization
-    selectedValue2 = 'เด็ก 1'; // initialization
+    selectedValue1 = '1'; // initialization
+    selectedValue2 = '1'; // initialization
     dateCheckin = DateTime.now(); // initialization
     dateCheckout = DateTime.now().add(const Duration(days: 1)); // initialization
+    _roomId = widget.roomId;
   }
 
   @override
@@ -35,8 +40,8 @@ class _BookingPageState extends State<BookingPage> {
         foregroundColor: Colors.white,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.account_circle,
-                color: Colors.white, size: 40),
+            icon:
+                const Icon(Icons.account_circle, color: Colors.white, size: 40),
             onPressed: () {
               // Handle the icon button press
             },
@@ -61,9 +66,13 @@ class _BookingPageState extends State<BookingPage> {
                   children: [
                     const Icon(
                       Icons.person, // Use the heart icon
-                      color: MaterialColors.primaryBackgroundColor, // Set the color
+                      color: MaterialColors
+                          .primaryBackgroundColor, // Set the color
                       size: 24.0, // Set the size
                     ),
+                    const SizedBox(width: 10),
+                    const Text('ผู้ใหญ่',
+                        style: TextStyle(color: MaterialColors.secondary)),
                     const SizedBox(width: 10),
                     DropdownButton<String>(
                       value: selectedValue1,
@@ -74,8 +83,7 @@ class _BookingPageState extends State<BookingPage> {
                           selectedValue1 = newValue!;
                         });
                       },
-                      items: <String>['ผู้ใหญ่ 1', 'ผู้ใหญ่ 2', 'ผู้ใหญ่ 3']
-                          .map((String value) {
+                      items: <String>['1', '2', '3'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value,
@@ -84,6 +92,9 @@ class _BookingPageState extends State<BookingPage> {
                         );
                       }).toList(),
                     ),
+                    const Text('เด็ก',
+                        style: TextStyle(color: MaterialColors.secondary)),
+                    const SizedBox(width: 10),
                     DropdownButton<String>(
                       value: selectedValue2,
                       style: const TextStyle(color: MaterialColors.secondary),
@@ -93,8 +104,7 @@ class _BookingPageState extends State<BookingPage> {
                           selectedValue2 = newValue!;
                         });
                       },
-                      items: <String>['เด็ก 1', 'เด็ก 2', 'เด็ก 3']
-                          .map((String value) {
+                      items: <String>['1', '2', '3'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value,
@@ -120,8 +130,8 @@ class _BookingPageState extends State<BookingPage> {
                             const SizedBox(width: 10),
                             const Text("เช็คอิน",
                                 textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: MaterialColors.secondary)),
+                                style:
+                                    TextStyle(color: MaterialColors.secondary)),
                             DatePicker(
                               restorationId: 'checkin',
                               onSelected: (newDate) {
@@ -142,8 +152,8 @@ class _BookingPageState extends State<BookingPage> {
                             const SizedBox(width: 10),
                             const Text("เช็คเอาท์",
                                 textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: MaterialColors.secondary)),
+                                style:
+                                    TextStyle(color: MaterialColors.secondary)),
                             DatePicker(
                               restorationId: 'checkout',
                               onSelected: (newDate) {
@@ -168,11 +178,17 @@ class _BookingPageState extends State<BookingPage> {
                         print(dateCheckin);
                         print(dateCheckout);
                       }
-                     
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const BookingPage(),
+                          builder: (context) => SearchRoomList(
+                            roomId:_roomId,
+                            adult: int.parse(selectedValue1),
+                            dateCheckin: dateCheckin.toString(),
+                            dateCheckout: dateCheckout.toString(),
+                            children: int.parse(selectedValue2),
+                          ),
                         ),
                       );
                     },

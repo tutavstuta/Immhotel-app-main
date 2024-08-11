@@ -239,7 +239,7 @@ class DetailView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const BookingPage(),
+                          builder: (context) =>  BookingPage(roomId: detail.id,),
                         ),
                       );
                     },
