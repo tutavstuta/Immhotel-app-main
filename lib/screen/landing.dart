@@ -1,6 +1,7 @@
+
+import "package:carousel_slider_plus/carousel_slider_plus.dart";
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
-import 'package:carousel_slider/carousel_slider.dart';
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/widgets/appbar.dart";
 

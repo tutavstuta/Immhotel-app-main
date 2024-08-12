@@ -8,7 +8,7 @@ class MaterialColors {
   static const Color onPrimary = Color.fromRGBO(22, 22, 22, 1);
   static const Color secondary = Color.fromRGBO(22, 22, 22, 1);
   static const Color onSecondary = Color.fromRGBO(255, 255, 255, 1);
-  static const Color label = Color.fromRGBO(254, 36, 114, 1.0);
+  static const Color label = Color.fromRGBO(32, 32, 32, 1);
   static const Color info = Color.fromRGBO(0, 188, 212, 1.0);
   static const Color error = Color.fromRGBO(244, 67, 54, 1.0);
   static const Color success = Color.fromRGBO(76, 175, 80, 1.0);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "package:imm_hotel_app/screen/booked.dart";
 import "package:imm_hotel_app/screen/home.dart";
 import "package:imm_hotel_app/screen/login.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
@@ -21,11 +22,9 @@ class MyApp extends StatelessWidget {
           '/home': (BuildContext context) => const Home(),
           '/login': (BuildContext context) => const Login(),
           "/register": (BuildContext context) => const Register(),
-          // "/pro": (BuildContext context) => new Pro(),
-          // "/profile": (BuildContext context) => new Profile(),
-          // "/articles": (BuildContext context) => new Articles(),
-          // "/components": (BuildContext context) => new Components(),
-          // "/account": (BuildContext context) => new Register(),
+          "/booked": (BuildContext context) => const Booked(),
+        
+          
         });
   }
 }

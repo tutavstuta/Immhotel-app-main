@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:imm_hotel_app/screen/booked.dart';
+import 'package:imm_hotel_app/services/booking_confirm.dart';
 import 'package:imm_hotel_app/services/searchroom.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/server.dart";
@@ -138,6 +140,7 @@ class RoomItem extends StatefulWidget {
 class _RoomItemState extends State<RoomItem> {
   late int _totalPrice;
   late int _price;
+  late String _id;
 
   String trimParagraph(String text, int maxLength) {
     if (text.length <= maxLength) {
@@ -158,6 +161,7 @@ class _RoomItemState extends State<RoomItem> {
   @override
   void initState() {
     super.initState();
+
     _totalPrice = 0;
     _price = 0;
   }
@@ -230,28 +234,52 @@ class _RoomItemState extends State<RoomItem> {
                 onSelected: (value) {
                   print(value);
                   setState(() {
-                  _totalPrice = value['total_price'];
-                  _price = value['price'];
-                    
+                    _totalPrice = value['total_price'];
+                    _price = value['price'];
+                    _id = value['_id'];
                   });
                 },
               ),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    confirmBooking(
+                        widget.room['_id'],
+                        widget.room['adults'],
+                        widget.room['childs'],
+                        _id,
+                        widget.room['date_checkin'],
+                        widget.room['date_checkout']);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Booked(),
+                      ),
+                    );
+                  },
                   child: Row(
                     children: [
                       Expanded(
                         child: Column(
                           children: [
-                            Text('$_price บาท',style: const TextStyle( decoration: TextDecoration.lineThrough,),),
-                            Text('$_totalPrice บาท'),
+                            Text(
+                              '$_price บาท',
+                              style: const TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            Text('$_totalPrice บาท',
+                                style: const TextStyle(fontSize: 20)),
                           ],
                         ),
                       ),
                       const Expanded(
                         child: Column(
                           children: [
-                            Text('จอง'),
+                            Text(
+                              'จอง',
+                              style: TextStyle(fontSize: 25),
+                            ),
                           ],
                         ),
                       ),
