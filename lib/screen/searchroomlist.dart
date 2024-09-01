@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:imm_hotel_app/screen/booked.dart';
@@ -232,7 +233,9 @@ class _RoomItemState extends State<RoomItem> {
               Promotions(
                 promotion: widget.room['promotions'],
                 onSelected: (value) {
-                  print(value);
+                  if (kDebugMode) {
+                    print(value);
+                  }
                   setState(() {
                     _totalPrice = value['total_price'];
                     _price = value['price'];
@@ -306,14 +309,12 @@ class Promotions extends StatefulWidget {
 
 class _PromotionsState extends State<Promotions> {
   late String _selectedPromotionId;
-  late dynamic _selectedPromotion;
   late List _promotion;
 
   @override
   void initState() {
     super.initState();
     _selectedPromotionId = widget.promotion[0]['_id'];
-    _selectedPromotion = widget.promotion[0];
     _promotion = widget.promotion;
   }
 
@@ -351,7 +352,6 @@ class _PromotionsState extends State<Promotions> {
             onChanged: (value) {
               setState(() {
                 _selectedPromotionId = value;
-                _selectedPromotion = e;
                 widget.onSelected(e);
               });
             },

@@ -12,7 +12,7 @@ class AppBarHome extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarHomeState extends State<AppBarHome> {
-  String _selectedOption = 'Option 1'; // Maintain the selected option
+// Maintain the selected option
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class _AppBarHomeState extends State<AppBarHome> {
           ), // Set icon for PopupMenuButton
           onSelected: (String result) {
             setState(() {
-              _selectedOption = result; // Update selected option
+// Update selected option
             });
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

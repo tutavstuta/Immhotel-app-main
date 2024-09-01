@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
         const History(),
 
         /// Booked page
-        Booked(),
+        const Booked(),
       ][currentPageIndex],
     );
   }

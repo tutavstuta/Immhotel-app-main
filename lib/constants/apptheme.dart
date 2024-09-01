@@ -12,8 +12,6 @@ class AppTheme {
     onSecondary: MaterialColors.onSecondary,
     error: MaterialColors.error,
     onError: MaterialColors.error,
-    background: MaterialColors.primaryBackgroundColor,
-    onBackground: MaterialColors.secondaryTextColor,
     surface: MaterialColors.surface,
     onSurface: MaterialColors.onSurface,
   );
@@ -28,8 +26,6 @@ class AppTheme {
     onSecondary: MaterialColors.onSecondary,
     error: MaterialColors.error,
     onError: MaterialColors.error,
-    background: MaterialColors.onSecondary,
-    onBackground: MaterialColors.primaryBackgroundColor,
     surface: MaterialColors.surface,
     onSurface: MaterialColors.secondary,
   );
