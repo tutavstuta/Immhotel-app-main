@@ -25,12 +25,10 @@ Future<LoginResponse> login(String email, String password) async {
 
   if (response.statusCode == 200) {
     final body = jsonDecode(response.body);
-    if (kDebugMode) {
-      print(response.body);
-    }
+    
     final token = body['token'];
     storage.write(key: "token", value: token);
-
+  
     return LoginResponse.fromJson(
         jsonDecode(response.body) as Map<String, dynamic>);
   } else {
@@ -160,8 +158,8 @@ class _LoginState extends State<Login> {
                         },
                         style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(MaterialColors.primary),
-                            foregroundColor: MaterialStateProperty.all(
+                                WidgetStateProperty.all(MaterialColors.primary),
+                            foregroundColor: WidgetStateProperty.all(
                                 MaterialColors.onPrimary)),
                         child: const Text('เข้าสู่ระบบ')),
                   ),
@@ -199,3 +197,5 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
+

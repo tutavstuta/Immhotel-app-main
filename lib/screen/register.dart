@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
-import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/screen/login.dart";
 
 class Register extends StatefulWidget {
@@ -211,9 +210,9 @@ class _RegisterState extends State<Register> {
                           });
                         },
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                                 MaterialColors.primaryBackgroundColor),
-                            foregroundColor: MaterialStateProperty.all(
+                            foregroundColor: WidgetStateProperty.all(
                                 MaterialColors.primary)),
                         child: const Text('สมัครสมาชิก')),
                   ),

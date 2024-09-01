@@ -40,12 +40,13 @@ class _DatePickerExampleState extends State<DatePicker> with RestorationMixin {
     return DialogRoute<DateTime>(
       context: context,
       builder: (BuildContext context) {
+        DateTime now = DateTime.now();
         return DatePickerDialog(
           restorationId: 'date_picker_dialog',
           initialEntryMode: DatePickerEntryMode.calendarOnly,
-          initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
-          firstDate: DateTime.now(),
-          lastDate: DateTime(2026),
+          initialDate: DateTime(now.year,now.month,now.day+1),
+          firstDate: DateTime(now.year,now.month,now.day+1),
+          lastDate: DateTime(now.year+5,now.month,now.day),
         );
       },
     );

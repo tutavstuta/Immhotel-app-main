@@ -161,9 +161,9 @@ class _RoomItemState extends State<RoomItem> {
   @override
   void initState() {
     super.initState();
-
-    _totalPrice = 0;
-    _price = 0;
+    _totalPrice = widget.room['promotions'][0]['total_price'];
+    _price = widget.room['promotions'][0]['price'];
+    _id = widget.room['promotions'][0]['_id'];
   }
 
   @override
@@ -305,13 +305,15 @@ class Promotions extends StatefulWidget {
 }
 
 class _PromotionsState extends State<Promotions> {
-  late String? _selectedPromotion;
+  late String _selectedPromotionId;
+  late dynamic _selectedPromotion;
   late List _promotion;
 
   @override
   void initState() {
     super.initState();
-    _selectedPromotion = null;
+    _selectedPromotionId = widget.promotion[0]['_id'];
+    _selectedPromotion = widget.promotion[0];
     _promotion = widget.promotion;
   }
 
@@ -345,10 +347,11 @@ class _PromotionsState extends State<Promotions> {
               detail: e,
             ),
             value: e['_id'],
-            groupValue: _selectedPromotion,
+            groupValue: _selectedPromotionId,
             onChanged: (value) {
               setState(() {
-                _selectedPromotion = value;
+                _selectedPromotionId = value;
+                _selectedPromotion = e;
                 widget.onSelected(e);
               });
             },
