@@ -60,19 +60,17 @@ class _BookedState extends State<Booked> {
                           color: MaterialColors.primary,
                           borderRadius: BorderRadius.all(Radius.circular(50)),
                         ),
-                        child: Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "การจองของคุณ",
-                                style: TextStyle(
-                                    color: MaterialColors.label, fontSize: 25),
-                                textAlign: TextAlign.start,
-                              ),
-                              BookingList(bookings: bookings),
-                            ],
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "การจองของคุณ",
+                              style: TextStyle(
+                                  color: MaterialColors.label, fontSize: 25),
+                              textAlign: TextAlign.start,
+                            ),
+                            BookingList(bookings: bookings),
+                          ],
                         ),
                       ),
                     ],

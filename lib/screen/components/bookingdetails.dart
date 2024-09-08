@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import 'package:intl/intl.dart';
+import 'package:imm_hotel_app/screen/uploadslip.dart';
+import 'package:imm_hotel_app/screen/slip.dart';
 
 class BookingDetails extends StatelessWidget {
   BookingDetails({
@@ -21,7 +23,7 @@ class BookingDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
@@ -191,9 +193,19 @@ class BookingDetails extends StatelessWidget {
           ],
         ),
         Row(
-           mainAxisAlignment : MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: ()=>{}, child: const Text("อัพโหลด สลิป")),
+            ElevatedButton(
+                onPressed: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Slip(bookingId: booking['_id']),
+                        ),
+                      )
+                    },
+                child: const Text("อัพโหลด สลิป")),
           ],
         )
       ],

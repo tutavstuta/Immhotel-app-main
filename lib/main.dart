@@ -22,8 +22,7 @@ class MyApp extends StatelessWidget {
           '/home': (BuildContext context) => const Home(),
           '/login': (BuildContext context) => const Login(),
           "/register": (BuildContext context) => const Register(),
-          "/booked": (BuildContext context) => const Booked(),
-        
+          "/booked": (BuildContext context) => const Booked(),     
           
         });
   }
