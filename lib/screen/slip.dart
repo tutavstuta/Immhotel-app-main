@@ -20,6 +20,7 @@ class _SlipState extends State<Slip> {
   final _initialDirectoryController = TextEditingController();
   final _fileExtensionController = TextEditingController();
   String? _fileName;
+  String? _filePath;
   String? _saveAsFileName;
   List<PlatformFile>? _paths;
   String? _directoryPath;
@@ -55,6 +56,7 @@ class _SlipState extends State<Slip> {
         lockParentWindow: _lockParentWindow,
       ))
           ?.files;
+       
     } on PlatformException catch (e) {
       _logException('Unsupported operation$e');
     } catch (e) {
@@ -66,6 +68,9 @@ class _SlipState extends State<Slip> {
       _fileName =
           _paths != null ? _paths!.map((e) => e.name).toString() : '...';
       _userAborted = _paths == null;
+      _filePath = _paths != null ? _paths!.map((e) => e.path).toString() : '...';
+      print(_fileName);
+      print(_filePath);
     });
   }
 
