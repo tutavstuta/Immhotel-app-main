@@ -9,59 +9,9 @@ import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/constants/server.dart";
 import 'package:imm_hotel_app/screen/register.dart';
 
-Future<LoginResponse> login(String email, String password) async {
-  const storage = FlutterSecureStorage();
-  final response = await http.post(
-    Uri.parse('${ServerConstant.server}/customer/login'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'email': email,
-      'password': password,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    final body = jsonDecode(response.body);
-    
-    final token = body['token'];
-    storage.write(key: "token", value: token);
-  
-    return LoginResponse.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
-  } else {
-    throw Exception('Failed to login');
-  }
-}
-
-class LoginResponse {
-  final String token;
-  final String message;
-  final String tokenType;
-
-  const LoginResponse({
-    required this.token,
-    required this.message,
-    required this.tokenType,
-  });
-
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'token': String token,
-        'message': String message,
-        'tokenType': String tokenType,
-      } =>
-        LoginResponse(
-          token: token,
-          message: message,
-          tokenType: tokenType,
-        ),
-      _ => throw const FormatException('Failed to login'),
-    };
-  }
-}
+// Define a global key for ScaffoldMessenger
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -74,12 +24,65 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<LoginResponse>? _futureLoginResponse;
+  bool _isLoading = false;
   bool _isObscure = true;
+
+  Future<void> login(String email, String password) async {
+    const storage = FlutterSecureStorage();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('${ServerConstant.server}/customer/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final token = body['token'];
+        await storage.write(key: "token", value: token);
+
+        if (!mounted) return;
+
+        Navigator.pushNamed(context, '/home');
+      } else {
+        if (!mounted) return;
+
+        // Use the global scaffoldMessengerKey to show SnackBar
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Center(child: Text('Invalid email or password')),
+            backgroundColor: Colors.white,
+          ),
+        );
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Center(child: Text('An error occurred: $e')),
+          backgroundColor: Colors.white,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey, // Use the global key here
       theme: ThemeData(
           fontFamily: 'NotoSansThai', colorScheme: AppTheme.lightColorScheme),
       home: Scaffold(
@@ -92,7 +95,8 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(right: 20, left: 20),
                     child: Image.asset("assets/images/logo1.png")),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                   child: TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(
@@ -113,8 +117,8 @@ class _LoginState extends State<Login> {
                   child: TextField(
                     obscureText: _isObscure,
                     controller: _passwordController,
-                    style:
-                        const TextStyle(color: MaterialColors.secondaryTextColor),
+                    style: const TextStyle(
+                        color: MaterialColors.secondaryTextColor),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -126,8 +130,9 @@ class _LoginState extends State<Login> {
                       prefixIcon: const Icon(Icons.lock),
                       labelText: 'พาสเวิร์ด',
                       suffixIcon: IconButton(
-                        icon: Icon(
-                            _isObscure ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_isObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () {
                           setState(() {
                             _isObscure = !_isObscure;
@@ -141,51 +146,53 @@ class _LoginState extends State<Login> {
                   width: double.infinity,
                   height: 80,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          // Handle button press
-                          setState(() {
-                            _futureLoginResponse = login(
-                                _emailController.text, _passwordController.text);
-                          });
-                          if (_futureLoginResponse != null) {
-                            Navigator.pushReplacementNamed(context, '/home');
-                          }else{
-                            Navigator.pushReplacementNamed(context, '/login');
-                          }
-                        },
-                        style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all(MaterialColors.primary),
-                            foregroundColor: WidgetStateProperty.all(
-                                MaterialColors.onPrimary)),
-                        child: const Text('เข้าสู่ระบบ')),
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 20, top: 20),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            onPressed: () {
+                              login(_emailController.text,
+                                  _passwordController.text);
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                  MaterialColors.primary),
+                              foregroundColor: WidgetStateProperty.all(
+                                  MaterialColors.onPrimary),
+                            ),
+                            child: const Text('เข้าสู่ระบบ')),
                   ),
                 ),
                 SizedBox(
                   width: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: Center(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("สมัครสมาชิก?"),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Register(),
-                              ),
-                            );
-                          },
-                          child: const Text(" Sign Up",
-                              style: TextStyle(color: MaterialColors.success)),
-                        ),
-                      ],
-                    )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("สมัครสมาชิก?"),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Register(),
+                                ),
+                              );
+                            },
+                            child: const Text(" Sign Up",
+                                style:
+                                    TextStyle(color: MaterialColors.success)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -196,5 +203,3 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
-

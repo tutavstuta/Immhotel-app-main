@@ -152,6 +152,7 @@ class _SlipState extends State<Slip> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      key:_scaffoldKey,
         appBar: AppBar(
           title: const Text('Upload slip'),
         ),
