@@ -149,10 +149,12 @@ class _LoginState extends State<Login> {
                     padding:
                         const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: _isLoading
-                        ? const SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CircularProgressIndicator())
+                        ? const Center(
+                          child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: CircularProgressIndicator()),
+                        )
                         : ElevatedButton(
                             onPressed: () {
                               login(_emailController.text,
