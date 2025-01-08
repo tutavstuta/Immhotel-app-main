@@ -62,12 +62,24 @@ class _AppBarHomeState extends State<AppBarHome> {
       foregroundColor: Colors.white,
       toolbarHeight: 80,
       actions: <Widget>[
+        // Add the username in the AppBar directly
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: Text(
+            '$_userName',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        // PopupMenu for user actions
         PopupMenuButton<String>(
           icon: const Icon(
             Icons.account_circle,
             color: Colors.white,
             size: 40,
-          ), // Set icon for PopupMenuButton
+          ),
           onSelected: (String result) {
             setState(() {
               // Update selected option
@@ -75,27 +87,22 @@ class _AppBarHomeState extends State<AppBarHome> {
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
             PopupMenuItem<String>(
-              value: 'editprofile', // Edit profile option
+              value: 'editprofile',
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/editprofile'); // Navigate to EditProfile screen
+                  Navigator.pushNamed(context, '/editprofile');
                 },
                 child: const Text('แก้ไขข้อมูลส่วนตัว'),
               ),
             ),
             PopupMenuItem<String>(
-              value: 'signout', // Sign out option
+              value: 'signout',
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login'); // Navigate to login screen
+                  Navigator.pushNamed(context, '/login');
                 },
                 child: const Text('ออกจากระบบ'),
               ),
-            ),
-            // Add the username in the menu
-            PopupMenuItem<String>(
-              value: 'username',
-              child: Text('สวัสดี, $_userName'),
             ),
           ],
         ),
