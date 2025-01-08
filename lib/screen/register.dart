@@ -1,7 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
-import "package:imm_hotel_app/screen/login.dart";
+import "package:imm_hotel_app/constants/server.dart";
+import 'package:imm_hotel_app/screen/login.dart';
+
+// Define a global key for ScaffoldMessenger
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -18,13 +27,97 @@ class _RegisterState extends State<Register> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  bool _isLoading = false;
   bool _isObscure = true;
+
+  // ฟังก์ชันสำหรับการสมัครสมาชิก (ส่งคำขอ API)
+  Future<void> registerUser() async {
+    const storage = FlutterSecureStorage();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    // ตรวจสอบว่าฟิลด์ไม่ว่าง
+    if (_emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _passwordConfirmController.text.isEmpty ||
+        _nameController.text.isEmpty ||
+        _phoneController.text.isEmpty) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Center(child: Text('กรุณากรอกข้อมูลให้ครบถ้วน')),
+          backgroundColor: Colors.white,
+        ),
+      );
+      return;
+    }
+
+    // ตรวจสอบว่า password ตรงกันหรือไม่
+    if (_passwordController.text != _passwordConfirmController.text) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Center(child: Text('รหัสผ่านไม่ตรงกัน')),
+          backgroundColor: Colors.white,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // ส่งคำขอ POST ไปยัง API
+      final response = await http.post(
+        Uri.parse('${ServerConstant.server}/customer/signup'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'name': _nameController.text,
+          'password': _passwordController.text,
+          'telephone': _phoneController.text,
+          'email': _emailController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final token = body['token'];
+        await storage.write(key: "token", value: token);
+
+        if (!mounted) return;
+
+        Navigator.pop(context);
+      } else {
+        if (!mounted) return;
+
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Center(child: Text('ไม่สามารถสมัครสมาชิกได้ โปรดลองใหม่')),
+            backgroundColor: Colors.white,
+          ),
+        );
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Center(child: Text('เกิดข้อผิดพลาด: $e')),
+          backgroundColor: Colors.white,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: "imm hotel",
         debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: scaffoldMessengerKey,
         theme: ThemeData(
             fontFamily: 'NotoSansThai',
             colorScheme: AppTheme.lightColorDefault),
@@ -98,12 +191,12 @@ class _RegisterState extends State<Register> {
                     obscureText: _isObscure,
                     controller: _passwordController,
                     style: const TextStyle(
-                        color: MaterialColors.secondaryTextColor),
+                        color: Color.fromARGB(255, 0, 0, 0)),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           borderSide: BorderSide(
-                              color: MaterialColors.inpBorderColor,
+                              color: Color.fromARGB(255, 0, 0, 0),
                               width: 1.0,
                               style: BorderStyle.solid),
                           gapPadding: 10),
@@ -129,12 +222,12 @@ class _RegisterState extends State<Register> {
                     obscureText: _isObscure,
                     controller: _passwordConfirmController,
                     style: const TextStyle(
-                        color: MaterialColors.secondaryTextColor),
+                        color: Color.fromARGB(255, 0, 0, 0)),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           borderSide: BorderSide(
-                              color: MaterialColors.inpBorderColor,
+                              color: Color.fromARGB(255, 0, 0, 0),
                               width: 1.0,
                               style: BorderStyle.solid),
                           gapPadding: 10),
@@ -197,24 +290,16 @@ class _RegisterState extends State<Register> {
                         const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: ElevatedButton(
                         onPressed: () {
-                          // Handle button press
-                          setState(() {
-                            // _futureLoginResponse = login(_emailController.text,
-                            //         _passwordController.text)
-                            //     as Future<LoginResponse>?;
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => const Home()),
-                            // );
-                          });
+                          registerUser();
                         },
                         style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
                                 MaterialColors.primaryBackgroundColor),
                             foregroundColor: WidgetStateProperty.all(
-                                MaterialColors.primary)),
-                        child: const Text('สมัครสมาชิก')),
+                                MaterialColors.primary),
+                                ),
+                                child: const Text('สมัครสมาชิก'),
+                      ),
                   ),
                 ),
                 SizedBox(

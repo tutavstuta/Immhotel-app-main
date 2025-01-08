@@ -83,7 +83,7 @@ class _BookingPageState extends State<BookingPage> {
                           selectedValue1 = newValue!;
                         });
                       },
-                      items: <String>['1', '2', '3'].map((String value) {
+                      items: <String>['0','1', '2', '3'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value,
@@ -104,7 +104,7 @@ class _BookingPageState extends State<BookingPage> {
                           selectedValue2 = newValue!;
                         });
                       },
-                      items: <String>['1', '2', '3'].map((String value) {
+                      items: <String>['0','1', '2', '3'].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value,

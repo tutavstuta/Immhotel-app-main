@@ -82,6 +82,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: scaffoldMessengerKey, // Use the global key here
       theme: ThemeData(
           fontFamily: 'NotoSansThai', colorScheme: AppTheme.lightColorScheme),
