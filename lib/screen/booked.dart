@@ -136,14 +136,14 @@ class Booking extends StatelessWidget {
         child: ListTile(
       title: Column(
         children: [
-          Row(
+          Column(
             children: [
               Text(promotion['title'],
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 242, 8, 0))),
               Text(promotion['description'],
-                  style: const TextStyle(
+                 style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: MaterialColors.surface)),
             ],

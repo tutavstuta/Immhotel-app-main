@@ -212,11 +212,11 @@ class _RoomItemState extends State<RoomItem> {
                               const TextStyle(color: MaterialColors.secondary),
                           textAlign: TextAlign.start,
                         ),
-                        const Text(
-                          'ดูรายละเอียดห้องพักและข้อมูลเพิ่มเติม',
-                          style: TextStyle(color: MaterialColors.surface),
-                          textAlign: TextAlign.start,
-                        )
+                        //const Text(
+                        //  'ดูรายละเอียดห้องพักและข้อมูลเพิ่มเติม',
+                        //  style: TextStyle(color: MaterialColors.surface),
+                        //  textAlign: TextAlign.start,
+                        //)
                       ],
                     ),
                   )

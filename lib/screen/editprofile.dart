@@ -113,6 +113,7 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -128,12 +129,15 @@ class _EditProfileState extends State<EditProfile> {
         ),
         home: Scaffold(
           appBar: AppBar(
-            title: const Text("แก้ไขโปรไฟล์", style: TextStyle(color: Colors.white),),
+            title: const Text(
+              "แก้ไขโปรไฟล์",
+              style: TextStyle(color: Colors.white),
+            ),
             backgroundColor: const Color.fromARGB(255, 149, 97, 81),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                Navigator.pop(context); // ย้อนกลับไปหน้าก่อนหน้า
+                Navigator.pop(context);
               },
             ),
           ),
@@ -193,7 +197,17 @@ class _EditProfileState extends State<EditProfile> {
         readOnly: readOnly,
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+           
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            
+          ),
           prefixIcon: Icon(icon),
         ),
       ),
@@ -212,7 +226,17 @@ class _EditProfileState extends State<EditProfile> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            
+          ),
           prefixIcon: Icon(icon),
           suffixIcon: IconButton(
             icon: Icon(
@@ -238,10 +262,13 @@ class _EditProfileState extends State<EditProfile> {
         child: ElevatedButton(
           onPressed: editProfile,
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: WidgetStateProperty.all(
                 MaterialColors.primaryBackgroundColor),
           ),
-          child: const Text('บันทึกการเปลี่ยนแปลง', style: TextStyle(color: Colors.white),),
+          child: const Text(
+            'บันทึกการเปลี่ยนแปลง',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
