@@ -13,13 +13,13 @@ import "package:imm_hotel_app/widgets/appbar.dart";
 
 Future<RoomDetailResponse> getRoomDetail(String roomId) async {
   const storage = FlutterSecureStorage();
-  var token = await storage.read(key: 'token');
+  //var token = await storage.read(key: 'token');
   final response = await http.get(
     Uri.parse('${ServerConstant.server}/customer/roomdetail/$roomId'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token'
-    },
+   // headers: <String, String>{
+    //  'Content-Type': 'application/json; charset=UTF-8',
+    //  'Authorization': 'Bearer $token'
+    //},
   );
 
   if (response.statusCode == 200) {
@@ -206,12 +206,34 @@ class _RoomDetailState extends State<RoomDetail> {
   }
 }
 
-class DetailView extends StatelessWidget {
+class DetailView extends StatefulWidget {
   final RoomDetailResponse detail;
   const DetailView({super.key, required this.detail});
 
   @override
+  State<DetailView> createState() => _DetailViewState();
+}
+
+class _DetailViewState extends State<DetailView> {
+  bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+  }
+
+  Future<void> _checkLogin() async {
+    const storage = FlutterSecureStorage();
+    final token = await storage.read(key: "token");
+    setState(() {
+      isLoggedIn = token != null && token.isNotEmpty;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final detail = widget.detail;
     return SingleChildScrollView(
       child: Center(
         child: Column(
@@ -226,27 +248,27 @@ class DetailView extends StatelessWidget {
               options: CarouselOptions(
                 autoPlay: true,
                 enlargeCenterPage: true,
-                viewportFraction:
-                    1, // Show a fraction of the next and previous images
+                viewportFraction: 1,
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>  BookingPage(roomId: detail.id,),
-                        ),
-                      );
-                    },
-                    child: const Text('สำรองห้องพัก'),
+                if (isLoggedIn)
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingPage(roomId: detail.id),
+                          ),
+                        );
+                      },
+                      child: const Text('สำรองห้องพัก'),
+                    ),
                   ),
-                ),
               ],
             ),
             const Divider(

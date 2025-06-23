@@ -17,7 +17,7 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   late String selectedValue1 = '1';
-  late String selectedValue2 = '1';
+  late String selectedValue2 = '0';
   late DateTime dateCheckin;
   late DateTime dateCheckout;
   late String _roomId;
@@ -26,7 +26,7 @@ class _BookingPageState extends State<BookingPage> {
   void initState() {
     super.initState();
     selectedValue1 = '1'; // initialization
-    selectedValue2 = '1'; // initialization
+    selectedValue2 = '0'; // initialization
     dateCheckin = DateTime.now(); // initialization
     dateCheckout = DateTime.now().add(const Duration(days: 1)); // initialization
     _roomId = widget.roomId;

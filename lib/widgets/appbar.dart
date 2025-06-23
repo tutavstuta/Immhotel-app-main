@@ -16,7 +16,7 @@ class AppBarHome extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarHomeState extends State<AppBarHome> {
-  String _userName = '';  // Variable to store username
+  String? _userName; // null = ยังไม่ได้ล็อกอิน
 
   @override
   void initState() {
@@ -24,10 +24,16 @@ class _AppBarHomeState extends State<AppBarHome> {
     _fetchUserName();
   }
 
-  // Function to fetch username from the server
   Future<void> _fetchUserName() async {
     const storage = FlutterSecureStorage();
     final token = await storage.read(key: "token");
+
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _userName = null;
+      });
+      return;
+    }
 
     try {
       final response = await http.get(
@@ -41,11 +47,13 @@ class _AppBarHomeState extends State<AppBarHome> {
           _userName = data['data']['name'] ?? 'ไม่มีชื่อ';
         });
       } else {
-        throw Exception("Failed to fetch user data");
+        setState(() {
+          _userName = null;
+        });
       }
     } catch (e) {
       setState(() {
-        _userName = 'ไม่มีชื่อ';
+        _userName = null;
       });
     }
   }
@@ -55,56 +63,77 @@ class _AppBarHomeState extends State<AppBarHome> {
     return AppBar(
       title: const Text(''),
       leadingWidth: 150,
-      leading: Image.asset(
-        'assets/images/logo.jpg',
-      ),
+      leading: Image.asset('assets/images/logo.jpg'),
       backgroundColor: MaterialColors.primaryBackgroundColor,
       foregroundColor: Colors.white,
       toolbarHeight: 80,
       actions: <Widget>[
-        // Add the username in the AppBar directly
         Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: Text(
-            '$_userName',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          padding: const EdgeInsets.only(right: 8.0),
+          child: _userName != null
+              ? Row(
+                  children: [
+                    Text(
+                      _userName!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _userMenu(),
+                  ],
+                )
+              : TextButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  icon: const Icon(Icons.login, color: Colors.white),
+                  label: const Text(
+                    'เข้าสู่ระบบ',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  // เมนูเมื่อผู้ใช้ล็อกอินแล้ว
+  Widget _userMenu() {
+    return PopupMenuButton<String>(
+      icon: const Icon(
+        Icons.account_circle,
+        color: Colors.white,
+        size: 40,
+      ),
+      onSelected: (String result) {
+        // ยังไม่ใช้ result โดยตรง
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'editprofile',
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/editprofile');
+            },
+            child: const Text('แก้ไขข้อมูลส่วนตัว'),
           ),
         ),
-        // PopupMenu for user actions
-        PopupMenuButton<String>(
-          icon: const Icon(
-            Icons.account_circle,
-            color: Colors.white,
-            size: 40,
+        PopupMenuItem<String>(
+          value: 'signout',
+          child: TextButton(
+            onPressed: () async {
+              const storage = FlutterSecureStorage();
+              await storage.delete(key: "token");
+              setState(() {
+                _userName = null;
+              });
+              Navigator.pop(context); // ปิด popup menu
+              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+            },
+            child: const Text('ออกจากระบบ'),
           ),
-          onSelected: (String result) {
-            setState(() {
-              // Update selected option
-            });
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            PopupMenuItem<String>(
-              value: 'editprofile',
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/editprofile');
-                },
-                child: const Text('แก้ไขข้อมูลส่วนตัว'),
-              ),
-            ),
-            PopupMenuItem<String>(
-              value: 'signout',
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                child: const Text('ออกจากระบบ'),
-              ),
-            ),
-          ],
         ),
       ],
     );

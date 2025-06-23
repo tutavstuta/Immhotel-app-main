@@ -13,7 +13,7 @@ class Slip extends StatefulWidget {
 
 class _SlipState extends State<Slip> {
 
-   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   final _defaultFileNameController = TextEditingController();
   final _dialogTitleController = TextEditingController();
@@ -66,7 +66,7 @@ class _SlipState extends State<Slip> {
     setState(() {
       _isLoading = false;
       _fileName =
-          _paths != null ? _paths!.map((e) => e.name).toString() : '...';
+      _paths != null ? _paths!.map((e) => e.name).toString() : '...';
       _userAborted = _paths == null;
       _filePath = _paths != null ? _paths!.map((e) => e.path).toString() : '...';
       print(_fileName);

@@ -1,6 +1,5 @@
-import 'dart:async';
+import 'dart:async'; 
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,12 +12,18 @@ import 'package:imm_hotel_app/widgets/appbar.dart';
 Future<List<dynamic>> getRoom() async {
   const storage = FlutterSecureStorage();
   var token = await storage.read(key: 'token');
+
+  Map<String, String> headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+  };
+
+  if (token != null) {
+    headers['Authorization'] = 'Bearer $token';
+  }
+
   final response = await http.get(
     Uri.parse('${ServerConstant.server}/customer/roomlist'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token'
-    },
+    headers: headers,
   ).catchError((error) => throw Exception('Error: $error'));
 
   if (response.statusCode == 200) {
@@ -34,31 +39,8 @@ Future<List<dynamic>> getRoom() async {
   }
 }
 
-class RoomListResponse {
-  final String id;
-  final String type;
-  final Int maxPerson;
-  final Int children;
-  final Int roomAmount;
-  final String image;
-  final String status;
-
-  RoomListResponse(
-      {required this.id,
-      required this.type,
-      required this.maxPerson,
-      required this.children,
-      required this.roomAmount,
-      required this.image,
-      required this.status});
-
-  List<RoomListResponse> roomlist = [];
-}
-
 class RoomPage extends StatefulWidget {
   const RoomPage({super.key});
-
-
 
   @override
   State<RoomPage> createState() => _RoomPageState();
@@ -89,7 +71,7 @@ class _RoomPageState extends State<RoomPage> {
         } else {
           List<dynamic> roomData = snapshot.data!;
           return Scaffold(
-            appBar:const AppBarHome(),
+            appBar: const AppBarHome(),
             backgroundColor: MaterialColors.secondaryBackgroundColor,
             body: SingleChildScrollView(
               child: Center(
@@ -148,9 +130,7 @@ class RoomList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context)
-          .size
-          .height, // Set height to fill available space
+      height: MediaQuery.of(context).size.height,
       child: ListView.builder(
         itemCount: roomData.length,
         itemBuilder: (context, index) {
@@ -172,8 +152,8 @@ class RoomItem extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: Colors.grey, // Set the color of the top border
-            width: 1.0, // Set the width of the top border
+            color: Colors.grey,
+            width: 1.0,
           ),
         ),
       ),
@@ -185,7 +165,7 @@ class RoomItem extends StatelessWidget {
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.network(
-                '${ServerConstant.server}/${room['image']}', // Replace with your image URL
+                '${ServerConstant.server}/${room['image']}',
                 width: 150,
                 height: 150,
                 fit: BoxFit.cover,
@@ -197,12 +177,12 @@ class RoomItem extends StatelessWidget {
             ),
             subtitle: Text('Max Persons: ${room['max_person']}'),
             onTap: () {
-               Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RoomDetail(roomId: room['_id']),
-          ),
-        );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RoomDetail(roomId: room['_id']),
+                ),
+              );
             },
           ),
         ),
