@@ -35,6 +35,17 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map && args['tab'] != null) {
+      setState(() {
+        currentPageIndex = args['tab']; // หรือ currentTab = args['tab'];
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final destinations = <NavigationDestination>[
       const NavigationDestination(

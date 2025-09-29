@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/widgets/datepicker.dart";
 import 'package:imm_hotel_app/screen/searchroomlist.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:imm_hotel_app/constants/server.dart';
 
 class BookingPage extends StatefulWidget {
   const BookingPage({
@@ -21,6 +25,7 @@ class _BookingPageState extends State<BookingPage> {
   late DateTime dateCheckin;
   late DateTime dateCheckout;
   late String _roomId;
+  String? _userName;
 
   @override
   void initState() {
@@ -30,6 +35,74 @@ class _BookingPageState extends State<BookingPage> {
     dateCheckin = DateTime.now(); // initialization
     dateCheckout = DateTime.now().add(const Duration(days: 1)); // initialization
     _roomId = widget.roomId;
+    _fetchUserName(); // <<--- เพิ่มบรรทัดนี้
+  }
+
+  Future<void> _fetchUserName() async {
+    const storage = FlutterSecureStorage();
+    final token = await storage.read(key: "token");
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _userName = null;
+      });
+      return;
+    }
+    try {
+      final response = await http.get(
+        Uri.parse('${ServerConstant.server}/customer/profile'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _userName = data['data']['name'] ?? 'ไม่มีชื่อ';
+        });
+      } else {
+        setState(() {
+          _userName = null;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _userName = null;
+      });
+    }// ถ้ามี API สำหรับดึงชื่อ user ให้เพิ่ม logic ตรงนี้
+    // ตัวอย่าง: setState(() { _userName = 'ชื่อผู้ใช้'; });
+  }
+
+  Widget _userMenu() {
+    return PopupMenuButton<String>(
+      icon: const Icon(
+        Icons.account_circle,
+        color: Colors.white,
+        size: 40,
+      ),
+      onSelected: (String result) {},
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'editprofile',
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/editprofile');
+            },
+            child: const Text('แก้ไขข้อมูลส่วนตัว'),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'signout',
+          child: TextButton(
+            onPressed: () async {
+              const storage = FlutterSecureStorage();
+              await storage.delete(key: "token");
+              Navigator.pop(context); // ปิด popup menu
+              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+            },
+            child: const Text('ออกจากระบบ'),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -39,14 +112,34 @@ class _BookingPageState extends State<BookingPage> {
         backgroundColor: MaterialColors.primaryBackgroundColor,
         foregroundColor: Colors.white,
         actions: <Widget>[
-          IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: Colors.white, size: 40),
-            onPressed: () {
-              // Handle the icon button press
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: _userName != null
+                ? Row(
+                    children: [
+                      Text(
+                        _userName!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      _userMenu(),
+                    ],
+                  )
+                : TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    icon: const Icon(Icons.login, color: Colors.white),
+                    label: const Text(
+                      'เข้าสู่ระบบ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
           ),
-          // Add more icons as needed
         ],
       ),
       body: Column(
@@ -137,8 +230,13 @@ class _BookingPageState extends State<BookingPage> {
                               onSelected: (newDate) {
                                 setState(() {
                                   dateCheckin = newDate;
+                                  // ถ้าเลือกวันเช็คอินใหม่ ให้ปรับวันเช็คเอาท์อย่างน้อย +1 วัน
+                                  if (!dateCheckout.isAfter(newDate)) {
+                                    dateCheckout = newDate.add(const Duration(days: 1));
+                                  }
                                 });
                               },
+                             // initialDate: dateCheckin,
                             ),
                           ],
                         ),
@@ -154,6 +252,7 @@ class _BookingPageState extends State<BookingPage> {
                                 textAlign: TextAlign.end,
                                 style:
                                     TextStyle(color: MaterialColors.secondary)),
+                            // ตรวจสอบว่ามี firstDate ใน DatePicker หรือไม่ ถ้าไม่มีให้ลบออก
                             DatePicker(
                               restorationId: 'checkout',
                               onSelected: (newDate) {
@@ -161,6 +260,10 @@ class _BookingPageState extends State<BookingPage> {
                                   dateCheckout = newDate;
                                 });
                               },
+                              // ถ้า initialDate ขึ้นแดง ให้ลองใช้ selectedDate แทน หรือดูชื่อพารามิเตอร์ที่ถูกต้องใน DatePicker ของคุณ
+                              // initialDate: dateCheckout,
+                              //selectedDate: dateCheckout,
+                              // ถ้า widget ของคุณใช้ชื่ออื่น เช่น value: dateCheckout, ให้เปลี่ยนเป็นชื่อนั้น
                             ),
                           ],
                         ),

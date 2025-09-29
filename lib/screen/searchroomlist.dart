@@ -244,20 +244,21 @@ class _RoomItemState extends State<RoomItem> {
                 },
               ),
               ElevatedButton(
-                  onPressed: () {
-                    confirmBooking(
-                        widget.room['_id'],
-                        widget.room['adults'],
-                        widget.room['childs'],
-                        _id,
-                        widget.room['date_checkin'],
-                        widget.room['date_checkout']);
-
-                    Navigator.push(
+                  onPressed: () async {
+                    await confirmBooking(
+                      widget.room['_id'],
+                      widget.room['adults'],
+                      widget.room['childs'],
+                      _id,
+                      widget.room['date_checkin'],
+                      widget.room['date_checkout'],
+                    );
+                    // ส่งค่ากลับไปหน้า home ว่าให้เปิด tab booked (index 2 หรือ 3 แล้วแต่แอปคุณ)
+                    Navigator.pushNamedAndRemoveUntil(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const Booked(),
-                      ),
+                      '/home',
+                      (route) => false,
+                      arguments: {'tab': 3}, // สมมติว่า tab 2 คือ booked
                     );
                   },
                   child: Row(

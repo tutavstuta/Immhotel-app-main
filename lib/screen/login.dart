@@ -71,7 +71,8 @@ class _LoginState extends State<Login> {
     try {
       final result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
-        await _sendTokenToBackend("facebook", result.accessToken!.token);
+        final accessToken = result.accessToken!.token;
+        await _sendTokenToBackend("facebook", accessToken);
       } else {
         _showError("Facebook Login ล้มเหลว: ${result.message}");
       }

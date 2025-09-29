@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import 'package:intl/intl.dart';
-import 'package:imm_hotel_app/screen/uploadslip.dart';
 import 'package:imm_hotel_app/screen/slip.dart';
 
 class BookingDetails extends StatelessWidget {
@@ -9,12 +8,14 @@ class BookingDetails extends StatelessWidget {
     super.key,
     required this.booking,
     required this.guest,
+    required this.price_per_night,
     required this.totalPrice,
     required this.totalNight,
   });
 
   final dynamic booking;
   final dynamic guest;
+  final dynamic price_per_night;
   final dynamic totalPrice;
   final dynamic totalNight;
 
@@ -61,7 +62,7 @@ class BookingDetails extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(fNumber.format(totalPrice),
+                      Text(fNumber.format(price_per_night),
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: MaterialColors.surface)),
@@ -112,7 +113,7 @@ class BookingDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('THB ${fNumber.format(totalPrice * totalNight)}',
+                  Text('THB ${fNumber.format(totalPrice)}',
                       textAlign: TextAlign.start,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -149,7 +150,7 @@ class BookingDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('THB ${fNumber.format(totalPrice * totalNight)}',
+                  Text('THB ${fNumber.format(totalPrice)}',
                       textAlign: TextAlign.start,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -182,7 +183,7 @@ class BookingDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                      'THB ${fNumber.format(totalPrice * totalNight * 7 / 100)}',
+                      'THB ${fNumber.format(totalPrice * 7 / 100)}',
                       textAlign: TextAlign.start,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -195,17 +196,26 @@ class BookingDetails extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-                onPressed: () => {
+            (booking['slip'] != null && booking['slip'].toString().isNotEmpty)
+                ? const Text(
+                    "ชำระเงินเรียบร้อย",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 0, 255, 47),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               Slip(bookingId: booking['_id']),
                         ),
-                      )
+                      );
                     },
-                child: const Text("อัพโหลด สลิป")),
+                    child: const Text("อัพโหลด สลิป")),
           ],
         )
       ],

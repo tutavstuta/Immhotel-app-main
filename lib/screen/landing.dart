@@ -1,4 +1,3 @@
-
 import "package:carousel_slider_plus/carousel_slider_plus.dart";
 import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
@@ -8,16 +7,20 @@ import "package:imm_hotel_app/widgets/appbar.dart";
 class Landing extends StatelessWidget {
   Landing({super.key});
 
-
   final List<String> images = [
     '${ServerConstant.imagehost}/images/slider1.jpg',
-
+    '${ServerConstant.imagehost}/images/slider2.jpg',
+    '${ServerConstant.imagehost}/images/slider3.jpg',
+    '${ServerConstant.imagehost}/images/slider4.jpg',
+    '${ServerConstant.imagehost}/images/slider5.jpg',
     // Add more image URLs here
   ];
 
-
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double sliderHeight = screenWidth * 9 / 16; // อัตราส่วน 16:9
+
     final TextStyle headlineSmall = Theme.of(context).textTheme.headlineSmall!;
     ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
@@ -36,14 +39,22 @@ class Landing extends StatelessWidget {
             children: <Widget>[
               CarouselSlider(
                 items: images.map((url) {
-                  return Image.network(url, fit: BoxFit.cover);
+                  return Container(
+                    width: screenWidth,
+                    height: sliderHeight,
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
+                      width: screenWidth,
+                      height: sliderHeight,
+                    ),
+                  );
                 }).toList(),
                 options: CarouselOptions(
-                  height: 217, // Set your desired height
+                  height: sliderHeight, // ใช้ค่าที่คำนวณจากขนาดหน้าจอ
                   autoPlay: true,
                   enlargeCenterPage: true,
-                  viewportFraction:
-                      1, // Show a fraction of the next and previous images
+                  viewportFraction: 1,
                 ),
               ),
               Container(
@@ -63,7 +74,7 @@ class Landing extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('หัวใจและจิตวิญญาณของเชียงใหม',
+                          Text('หัวใจและจิตวิญญาณของเชียงใหม่',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.normal)),
                         ],

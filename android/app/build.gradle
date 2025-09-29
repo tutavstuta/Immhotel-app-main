@@ -49,13 +49,27 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        manifestPlaceholders = [
+            appAuthRedirectScheme: 'fb1806271673256241'
+        ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('my-release-key.jks')
+            storePassword '123456'
+            keyAlias 'immhotel_app'
+            keyPassword '123456'
+        }
     }
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
         }
     }
 }

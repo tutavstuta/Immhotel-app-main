@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
@@ -30,10 +32,10 @@ class _RegisterState extends State<Register> {
   bool _isLoading = false;
   bool _isObscure = true;
 
+  final storage = const FlutterSecureStorage(); // ประกาศตรงนี้
+
   // ฟังก์ชันสำหรับการสมัครสมาชิก (ส่งคำขอ API)
   Future<void> registerUser() async {
-    const storage = FlutterSecureStorage();
-
     setState(() {
       _isLoading = true;
     });
@@ -111,6 +113,73 @@ class _RegisterState extends State<Register> {
     }
   }
 
+  Future<void> _handleFacebookRegister() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        final accessToken = result.accessToken!.token;
+        await _sendTokenToBackend("facebook", accessToken);
+      } else {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('Facebook Login ล้มเหลว: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleRegister() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // ผู้ใช้กดยกเลิก
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      if (idToken != null) {
+        await _sendTokenToBackend("google", idToken);
+      } else {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('Google Login ล้มเหลว')),
+        );
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+    }
+  }
+
+  Future<void> _sendTokenToBackend(String provider, String token) async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.post(
+        Uri.parse('${ServerConstant.server}/customer/social-login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'provider': provider, 'token': token}),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        await storage.write(key: "token", value: body['token']);
+        if (!mounted) return;
+        Navigator.pushNamed(context, '/home');
+      } else {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('เข้าสู่ระบบด้วย $provider ไม่สำเร็จ')),
+        );
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -302,32 +371,52 @@ class _RegisterState extends State<Register> {
                       ),
                   ),
                 ),
+                // ปุ่มสมัครด้วย Facebook/Google
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.facebook, color: Colors.white),
+                      label: Text('สมัครด้วย Facebook'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: _handleFacebookRegister,
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.g_mobiledata, color: Colors.white),
+                      label: Text('สมัครด้วย Google'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      onPressed: _handleGoogleRegister,
+                    ),
+                  ],
+                ),
                 SizedBox(
                   width: double.infinity,
                   child: Padding(
                     padding:
                         const EdgeInsets.only(right: 20, left: 20, top: 20),
                     child: Center(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("มีบัญชีอยู่แล้ว?",
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 108, 108, 108))),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Login(),
-                              ),
-                            );
-                          },
-                          child: const Text(" Sign In",
-                              style: TextStyle(color: MaterialColors.success)),
-                        ),
-                      ],
-                    )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("มีบัญชีอยู่แล้ว?",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 108, 108, 108))),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Login(),
+                                ),
+                              );
+                            },
+                            child: const Text(" Sign In",
+                                style: TextStyle(color: MaterialColors.success)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],

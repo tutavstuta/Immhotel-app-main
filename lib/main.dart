@@ -5,8 +5,14 @@ import "package:imm_hotel_app/screen/login.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
 import "package:imm_hotel_app/screen/register.dart";
 import 'package:imm_hotel_app/screen/editprofile.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  const storage = FlutterSecureStorage();
+  await storage.delete(key: "token");
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
