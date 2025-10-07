@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">imm_hotel_app</string>
-    <string name="facebook_app_id">1806271673256241</string>
-    <string name="fb_login_protocol_scheme">fb1806271673256241</string>
+    <string name="facebook_app_id">1460167528426049</string>
+    <string name="facebook_client_token">f74369d8e3972122fb17569e5e96c3bb</string>
+    <string name="fb_login_protocol_scheme">c82207bc8272121052d8ecd1f23e5b81</string>
 </resources>
