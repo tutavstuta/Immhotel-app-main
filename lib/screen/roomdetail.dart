@@ -13,13 +13,13 @@ import "package:imm_hotel_app/widgets/appbar.dart";
 
 Future<RoomDetailResponse> getRoomDetail(String roomId) async {
   const storage = FlutterSecureStorage();
-  //var token = await storage.read(key: 'token');
+  var token = await storage.read(key: 'token');
   final response = await http.get(
     Uri.parse('${ServerConstant.server}/customer/roomdetail/$roomId'),
-   // headers: <String, String>{
-    //  'Content-Type': 'application/json; charset=UTF-8',
-    //  'Authorization': 'Bearer $token'
-    //},
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token'
+    },
   );
 
   if (response.statusCode == 200) {

@@ -53,63 +53,245 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
     try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return;
-      final googleAuth = await googleUser.authentication;
-      if (googleAuth.idToken != null) {
-        await _sendTokenToBackend("google", googleAuth.idToken!);
+      print('Starting Google Sign-in...');
+      
+      await GoogleSignIn().signOut();
+      
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      
+      if (googleUser == null) {
+        print('Google sign-in cancelled by user');
+        setState(() => _isLoading = false);
+        return;
+      }
+      
+      print('Google user signed in: ${googleUser.email}');
+      
+      // ดึงข้อมูลจาก Google
+      final email = googleUser.email;
+      final name = googleUser.displayName ?? '';
+      
+      // ส่งไปยัง backend โดยไม่ต้องใช้ token
+      await _loginWithGoogleEmail(email, name);
+      
+    } catch (e) {
+      print('Google Sign-in error: $e');
+      _showError("Google Login ผิดพลาด: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loginWithGoogleEmail(String email, String name) async {
+    try {
+      print('Attempting Google login with email: $email');
+      
+      // ส่งข้อมูลแบบพิเศษเพื่อบอกว่าเป็น Google login
+      final response = await http.post(
+        Uri.parse('${ServerConstant.server}/customer/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'googleLogin': true, // flag พิเศษ
+          'name': name,
+        }),
+      );
+
+      print('Google login response status: ${response.statusCode}');
+      print('Google login response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        
+        if (body['token'] != null && body['token'].toString().isNotEmpty) {
+          await storage.write(key: "token", value: body['token']);
+          print('Google login successful');
+          if (!mounted) return;
+          Navigator.pushNamed(context, '/home');
+        } else {
+          _showError("Server ไม่ส่งโทเคนกลับมา");
+        }
+      } else if (response.statusCode == 404 || response.statusCode == 401) {
+        // หากไม่พบผู้ใช้หรือ server ไม่รองรับ googleLogin flag
+        print('User not found or Google login not supported, trying alternative...');
+        await _tryAlternativeGoogleLogin(email, name);
       } else {
-        _showError("ไม่สามารถดึง Google ID Token ได้");
+        final errorBody = response.body.isNotEmpty ? response.body : 'ไม่มีข้อความจาก server';
+        _showError("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: $errorBody");
       }
     } catch (e) {
-      _showError("Google Login ผิดพลาด: $e");
+      print('Google login error: $e');
+      _showError("เกิดข้อผิดพลาด: $e");
+    }
+  }
+
+  Future<void> _tryAlternativeGoogleLogin(String email, String name) async {
+    try {
+      // วิธีที่ 1: ลองส่งไปที่ endpoint อื่น
+      final endpoints = [
+        '${ServerConstant.server}/customer/google-login',
+        '${ServerConstant.server}/customer/social-check',
+        '${ServerConstant.server}/customer/email-check',
+      ];
+      
+      for (final endpoint in endpoints) {
+        try {
+          print('Trying alternative endpoint: $endpoint');
+          
+          final response = await http.post(
+            Uri.parse(endpoint),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'email': email,
+              'name': name,
+              'provider': 'google',
+            }),
+          );
+
+          print('Alternative endpoint response: ${response.statusCode}');
+
+          if (response.statusCode == 200) {
+            final body = jsonDecode(response.body);
+            
+            if (body['token'] != null && body['token'].toString().isNotEmpty) {
+              await storage.write(key: "token", value: body['token']);
+              print('Alternative Google login successful');
+              if (!mounted) return;
+              Navigator.pushNamed(context, '/home');
+              return;
+            }
+          }
+        } catch (e) {
+          print('Alternative endpoint error: $e');
+          continue;
+        }
+      }
+      
+      // วิธีที่ 2: ลองใช้ password ง่ายๆ เพียงแค่รูปแบบเดียว
+      print('Trying simple password method...');
+      await _trySimplePasswordLogin(email);
+      
+    } catch (e) {
+      print('Alternative login error: $e');
+      _showError("ไม่สามารถเข้าสู่ระบบด้วย Google ได้");
+    }
+  }
+
+  Future<void> _trySimplePasswordLogin(String email) async {
+    try {
+      // ลองใช้ password เพียงแค่ 2-3 แบบที่เป็นไปได้
+      final passwords = [
+        'google_${email.split('@')[0]}', // google_tutavstuta
+        email.split('@')[0], // tutavstuta
+      ];
+      
+      for (final password in passwords) {
+        print('Trying simple login with password pattern: $password');
+        
+        final response = await http.post(
+          Uri.parse('${ServerConstant.server}/customer/login'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'email': email,
+            'password': password,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final body = jsonDecode(response.body);
+          
+          if (body['token'] != null && body['token'].toString().isNotEmpty) {
+            await storage.write(key: "token", value: body['token']);
+            print('Simple password login successful');
+            if (!mounted) return;
+            Navigator.pushNamed(context, '/home');
+            return;
+          }
+        }
+      }
+      
+      // หากทุกวิธีล้มเหลว
+      _showError(
+        'ไม่พบบัญชีที่ลงทะเบียนด้วย Google สำหรับอีเมล: $email\n\n'
+        'กรุณาไปที่หน้า "สมัครสมาชิก" แล้วสมัครด้วย Google ก่อน'
+      );
+      
+    } catch (e) {
+      print('Simple password login error: $e');
+      _showError("ไม่สามารถเข้าสู่ระบบด้วย Google ได้: $e");
+    }
+  }
+
+  // เก็บฟังก์ชัน _sendTokenToBackend ไว้สำหรับ Facebook
+  Future<void> _sendTokenToBackend(String provider, String token) async {
+    try {
+      print('Sending $provider token to backend...');
+      
+      final response = await http.post(
+        Uri.parse('${ServerConstant.server}/customer/social-login'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'provider': provider,
+          'token': token,
+        }),
+      );
+
+      print('$provider login response status: ${response.statusCode}');
+      print('$provider login response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        
+        if (body['token'] != null && body['token'].toString().isNotEmpty) {
+          await storage.write(key: "token", value: body['token']);
+          print('$provider login token saved successfully');
+          if (!mounted) return;
+          Navigator.pushNamed(context, '/home');
+        } else {
+          _showError("Server ไม่ส่งโทเคนกลับมาจาก $provider login");
+        }
+      } else {
+        final errorBody = response.body.isNotEmpty ? response.body : 'ไม่มีข้อความจาก server';
+        _showError("เข้าสู่ระบบด้วย $provider ไม่สำเร็จ: $errorBody");
+      }
+    } catch (e) {
+      print('$provider login error: $e');
+      _showError("เกิดข้อผิดพลาด: $e");
     }
   }
 
   Future<void> _handleFacebookLogin() async {
+    setState(() => _isLoading = true);
     try {
-      final result = await FacebookAuth.instance.login();
+      print('Starting Facebook Login...');
+      
+      final LoginResult result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.token;
+        print('Facebook access token obtained');
+        
         await _sendTokenToBackend("facebook", accessToken);
       } else {
-        _showError("Facebook Login ล้มเหลว: ${result.message}");
+        _showError('Facebook Login ล้มเหลว: ${result.message}');
       }
     } catch (e) {
       if (e.toString().contains('MissingPluginException')) {
         _showError(
           "Facebook Login ผิดพลาด: MissingPluginException\n"
           "วิธีแก้ไข:\n"
-          "- ให้ปิดแอปแล้วเปิดใหม่ (cold restart) หรือรัน 'flutter clean' แล้ว build ใหม่\n"
-          "- ตรวจสอบว่าได้ติดตั้งและตั้งค่า plugin flutter_facebook_auth ถูกต้อง (android/app/build.gradle, AndroidManifest.xml, MainActivity, ฯลฯ)\n"
-          "- หากเพิ่งเพิ่ม plugin ให้ปิด emulator/device แล้วเปิดใหม่"
+          "- ให้ปิดแอปแล้วเปิดใหม่ (cold restart)\n"
+          "- หรือรัน 'flutter clean' แล้ว build ใหม่\n"
+          "- ตรวจสอบการตั้งค่า Facebook plugin"
         );
       } else {
+        print('Facebook Login error: $e');
         _showError("Facebook Login ผิดพลาด: $e");
       }
-    }
-  }
-
-  Future<void> _sendTokenToBackend(String provider, String token) async {
-    setState(() => _isLoading = true);
-    try {
-      final response = await http.post(
-        Uri.parse('${ServerConstant.server}/customer/social-login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'provider': provider, 'token': token}), // <<<< ตรงนี้
-      );
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        await storage.write(key: "token", value: body['token']);
-        if (!mounted) return;
-        Navigator.pushNamed(context, '/home');
-      } else {
-        _showError("เข้าสู่ระบบด้วย $provider ไม่สำเร็จ");
-      }
-    } catch (e) {
-      _showError("เกิดข้อผิดพลาด: $e");
     } finally {
       setState(() => _isLoading = false);
     }

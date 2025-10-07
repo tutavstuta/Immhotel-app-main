@@ -3,6 +3,22 @@ import 'package:flutter/material.dart';
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/server.dart";
 import "package:imm_hotel_app/widgets/appbar.dart";
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future<List<dynamic>> getPromotions() async {
+  final response = await http.get(
+    Uri.parse('${ServerConstant.server}/news'),
+    headers: {'Content-Type': 'application/json; charset=UTF-8'},
+  ).catchError((error) => throw Exception('Error: $error'));
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> promoData = jsonDecode(response.body);
+    return promoData['data'];
+  } else {
+    throw Exception('Failed to get promotion list');
+  }
+}
 
 class Landing extends StatelessWidget {
   Landing({super.key});
@@ -160,11 +176,22 @@ class Landing extends StatelessWidget {
               ),
               Container(
                 color: MaterialColors.secondaryBackgroundColor,
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Container(
+                child: FutureBuilder<List<dynamic>>(
+                  future: getPromotions(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('ไม่พบโปรโมชั่น'));
+                    } else {
+                      final promotions = snapshot.data!;
+                      return Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: promotions.take(2).map((promo) => Container(
+                          width: MediaQuery.of(context).size.width / 2 - 24,
                           alignment: Alignment.topCenter,
                           color: MaterialColors.secondaryBackgroundColor,
                           child: Padding(
@@ -172,67 +199,40 @@ class Landing extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Container(
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        15), // Adjust the radius as needed
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                    '${ServerConstant.server}/${promo['image']}',
+                                    fit: BoxFit.fill, // ยืดเต็มพื้นที่คอลัมน์
+                                    width: double.infinity,
+                                    height: 200, // กำหนดความสูงคงที่
+                                    alignment: Alignment.center,
                                   ),
-                                  child: Image.asset(
-                                      "assets/images/promotion1.png",
-                                      height: 100),
                                 ),
-                                const Text('Best Flexible Rates',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: MaterialColors.secondary)),
-                                const Text(
-                                    'เพื่อความสะดวกสบายสูงสุดในการเลือกวันพักผ่อน หรือทริปสุดพิเศษของคุณ เพียงเลือกโปรโมชั่นแบบเปลี่ยนแปลงได้ รับสิทธิพิเศษ',
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.normal,
-                                        color: MaterialColors.secondary)),
+                                Text(
+                                  promo['title'],
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: MaterialColors.secondary,
+                                  ),
+                                ),
+                                Text(
+                                  promo['description'],
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.normal,
+                                    color: MaterialColors.secondary,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          color: MaterialColors.secondaryBackgroundColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Container(
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        15), // Adjust the radius as needed
-                                  ),
-                                  child: Image.asset(
-                                      "assets/images/promotion2.png",
-                                      height: 100),
-                                ),
-                                const Text('Best Prepaid Rates',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: MaterialColors.secondary)),
-                                const Text(
-                                    'วางแผนทริปล่วงหน้ากับเรา เพื่อราคาดีที่สุดสำหรับทริปสุดพิเศษของคุณ',
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.normal,
-                                        color: MaterialColors.secondary)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]),
+                        )).toList(),
+                      );
+                    }
+                  },
+                ),
               )
             ],
           ),
