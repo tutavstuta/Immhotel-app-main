@@ -13,13 +13,15 @@ Future<List<dynamic>> getRoom() async {
   const storage = FlutterSecureStorage();
   var token = await storage.read(key: 'token');
 
+  if (token == null || token.isEmpty) {
+    // handle not-logged-in state: prompt login or return early
+    throw Exception('Not authenticated');
+  }
+
   Map<String, String> headers = {
     'Content-Type': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token',
   };
-
-  if (token != null) {
-    headers['Authorization'] = 'Bearer $token';
-  }
 
   final response = await http.get(
     Uri.parse('${ServerConstant.server}/customer/roomlist'),

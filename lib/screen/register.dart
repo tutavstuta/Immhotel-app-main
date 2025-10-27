@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
 import "package:imm_hotel_app/constants/theme.dart";
 import "package:imm_hotel_app/constants/apptheme.dart";
@@ -158,8 +159,11 @@ class _RegisterState extends State<Register> {
         headers: {'Accept': 'application/json'},
       );
 
-      print('Facebook user info response: ${userInfoResponse.statusCode}');
-      print('Facebook user info body: ${userInfoResponse.body}');
+      if (kDebugMode) {
+        // debug-only log
+        print('Facebook user info response: ${userInfoResponse.statusCode}');
+        // ห้ามพิมพ์ token หรือส่วนที่เป็นความลับ
+      }
 
       if (userInfoResponse.statusCode == 200) {
         final userInfo = jsonDecode(userInfoResponse.body);
@@ -342,8 +346,11 @@ class _RegisterState extends State<Register> {
         },
       );
 
-      print('Google user info response: ${userInfoResponse.statusCode}');
-      print('Google user info body: ${userInfoResponse.body}');
+      if (kDebugMode) {
+        // debug-only log
+        print('Google user info response: ${userInfoResponse.statusCode}');
+        // ห้ามพิมพ์ token หรือส่วนที่เป็นความลับ
+      }
 
       if (userInfoResponse.statusCode == 200) {
         final userInfo = jsonDecode(userInfoResponse.body);

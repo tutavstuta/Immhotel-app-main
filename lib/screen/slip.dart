@@ -153,6 +153,20 @@ class _SlipState extends State<Slip> {
       _showSnackBar('กรุณาเลือกไฟล์ก่อน', isError: true);
       return;
     }
+    final platformFile = _paths!.first;
+    final allowedExt = ['jpg', 'jpeg', 'png', 'pdf'];
+    final ext = platformFile.extension?.toLowerCase();
+    if (ext == null || !allowedExt.contains(ext)) {
+      _showSnackBar('ชนิดไฟล์ไม่รองรับ', isError: true);
+      return;
+    }
+    // ขนาดสูงสุด 5 MB
+    final file = File(platformFile.path!);
+    final length = await file.length();
+    if (length > 5 * 1024 * 1024) {
+      _showSnackBar('ไฟล์ใหญ่เกินไป (สูงสุด 5MB)', isError: true);
+      return;
+    }
     setState(() {
       _isLoading = true;
     });

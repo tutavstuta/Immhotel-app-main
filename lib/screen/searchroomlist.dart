@@ -315,50 +315,54 @@ class _PromotionsState extends State<Promotions> {
   @override
   void initState() {
     super.initState();
-    _selectedPromotionId = widget.promotion[0]['_id'];
-    _promotion = widget.promotion;
+    _selectedPromotionId = widget.promotion.isNotEmpty ? widget.promotion[0]['_id'] : '';
+    _promotion = widget.promotion.where((promo) => promo['status'] == 1).toList(); // เช็คสถานะ
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: _promotion.map((e) {
-        return Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Colors.grey, // Set the color of the top border
-                width: 1.0, // Set the width of the top border
-              ),
-              bottom: BorderSide(
-                color: Colors.grey, // Set the color of the top border
-                width: 1.0, // Set the width of the top border
-              ),
-            ),
-          ),
-          child: RadioListTile<dynamic>(
-            activeColor: Colors.blue,
-            hoverColor: Colors.black,
-            tileColor: MaterialColors.primary,
-            title: Text(
-              e['title'],
-              style: const TextStyle(color: Color.fromARGB(255, 238, 11, 11)),
-              textAlign: TextAlign.start,
-            ),
-            subtitle: Promotion(
-              detail: e,
-            ),
-            value: e['_id'],
-            groupValue: _selectedPromotionId,
-            onChanged: (value) {
-              setState(() {
-                _selectedPromotionId = value;
-                widget.onSelected(e);
-              });
-            },
-          ),
-        );
-      }).toList(),
+      children: _promotion.isNotEmpty
+          ? _promotion.map((e) {
+              return Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.grey,
+                      width: 1.0,
+                    ),
+                    bottom: BorderSide(
+                      color: Colors.grey,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+                child: RadioListTile<dynamic>(
+                  activeColor: Colors.blue,
+                  hoverColor: Colors.black,
+                  tileColor: MaterialColors.primary,
+                  title: Text(
+                    e['title'],
+                    style: const TextStyle(color: Color.fromARGB(255, 238, 11, 11)),
+                    textAlign: TextAlign.start,
+                  ),
+                  subtitle: Promotion(
+                    detail: e,
+                  ),
+                  value: e['_id'],
+                  groupValue: _selectedPromotionId,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPromotionId = value;
+                      widget.onSelected(e);
+                    });
+                  },
+                ),
+              );
+            }).toList()
+          : [ // ถ้าไม่มีโปรโมชั่นที่แสดงผล
+              const Text('ไม่มีโปรโมชั่นที่แสดงผล', style: TextStyle(color: Colors.grey)),
+            ],
     );
   }
 }
